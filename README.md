@@ -1,6 +1,8 @@
 # MLG382 Machine Learning Comprehensive Notes
 
 This interactive website serves as a comprehensive resource for Machine Learning concepts, combining theoretical explanations with practical Python code examples. It's designed to be a dynamic learning tool for students and enthusiasts of Machine Learning, covering topics from foundational concepts to advanced algorithms, complete with mathematical formulas and step-by-step calculation examples.
+Click the link below to navigate to the interactive website.
+https://glorybinkatabana.github.io/MachineLearning_Explained/
 
 ## Features
 
