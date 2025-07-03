@@ -1,0 +1,2481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLG382 Machine Learning Notes</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- MathJax CDN for LaTeX rendering -->
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']],
+                processEscapes: true
+            }
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Lightest blue-gray */
+            color: #1a202c; /* Dark gray for text */
+            line-height: 1.6;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 280px;
+            background-color: #1f2937; /* Darker blue-gray */
+            color: #e5e7eb; /* Light text */
+            padding: 2rem 1rem;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 10; /* Ensure sidebar is on top */
+        }
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #93c5fd; /* Light blue */
+        }
+        .nav-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            color: #e5e7eb;
+            text-decoration: none;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .nav-link:hover {
+            background-color: #374151; /* Slightly lighter dark */
+            color: #fff;
+        }
+        .nav-link.active {
+            background-color: #2563eb; /* Blue */
+            color: #fff;
+            font-weight: 600;
+        }
+        .content-area {
+            margin-left: 280px;
+            flex-grow: 1;
+            padding: 2rem 3rem;
+            position: relative; /* For responsive adjustments */
+        }
+        .section {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .section-title {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #e5e7eb;
+            padding-bottom: 0.75rem;
+        }
+        .subsection-title {
+            font-size: 1.75rem; /* text-3xl */
+            font-weight: 700;
+            color: #2563eb; /* Blue */
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .sub-subsection-title {
+            font-size: 1.375rem; /* text-2xl */
+            font-weight: 600;
+            color: #4a5568; /* Gray */
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .key-concept {
+            margin-bottom: 1rem;
+        }
+        .key-concept strong {
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+        .code-block-container {
+            background-color: #eff6ff; /* Light blue background for code */
+            border: 1px solid #bfdbfe; /* Blue border */
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            position: relative;
+        }
+        .code-block-header {
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .code-block {
+            background-color: #f3f4f6; /* Lighter gray for code background */
+            color: #333;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap; /* Ensures line breaks are respected */
+            word-break: break-all; /* Breaks words if necessary */
+        }
+        .copy-btn {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.3rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .copy-btn:hover {
+            background-color: #1d4ed8;
+        }
+        .external-link {
+            color: #2563eb;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+        .external-link:hover {
+            color: #1d4ed8;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        table th, table td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+        }
+        table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        .math-formula {
+            display: block;
+            margin: 1.5rem 0;
+            font-size: 1.1em;
+            overflow-x: auto;
+            padding: 0.5rem;
+            background-color: #f0f4f8;
+            border-left: 4px solid #60a5fa;
+            border-radius: 0.25rem;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: none;
+                padding-bottom: 0;
+            }
+            .content-area {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+            .sidebar-toggle {
+                display: block;
+                background-color: #1f2937;
+                color: white;
+                padding: 1rem;
+                text-align: center;
+                cursor: pointer;
+                font-weight: 600;
+                position: sticky;
+                top: 0;
+                width: 100%;
+                z-index: 11; /* Above sidebar */
+            }
+            .sidebar.hidden-mobile {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <h1 class="sidebar-header">Machine Learning Notes</h1>
+            <nav>
+                <a href="#intro-ml" class="nav-link active" data-section="intro-ml">01. Intro to ML</a>
+                <a href="#types-ml" class="nav-link" data-section="types-ml">02. Types of ML</a>
+                <a href="#crisp-dm" class="nav-link" data-section="crisp-dm">03. CRISP-DM</a>
+                <a href="#k-means" class="nav-link" data-section="k-means">04. K-Means Clustering</a>
+                <a href="#decision-trees" class="nav-link" data-section="decision-trees">05. Decision Trees</a>
+                <a href="#logistic-regression" class="nav-link" data-section="logistic-regression">06. Logistic Regression</a>
+                <a href="#naive-bayes" class="nav-link" data-section="naive-bayes">07. Naïve Bayes Classifier</a>
+                <a href="#svm" class="nav-link" data-section="svm">08. Support Vector Machines</a>
+                <a href="#ann" class="nav-link" data-section="ann">09. Artificial Neural Networks</a>
+                <a href="#time-series" class="nav-link" data-section="time-series">10. Time Series</a>
+            </nav>
+        </div>
+
+        <!-- Mobile Toggle for Sidebar -->
+        <div class="sidebar-toggle md:hidden" id="sidebar-toggle">
+            Toggle Navigation
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="content-area" id="content-area">
+
+            <!-- 01. Introduction to Machine Learning -->
+            <div id="intro-ml" class="section">
+                <h2 class="section-title">01. Introduction to Machine Learning</h2>
+                <div class="theory-section">
+                    <h3 class="subsection-title">Theory</h3>
+                    <h4 class="sub-subsection-title">1.1 What is Machine Learning (ML)?</h4>
+                    <p class="mb-4">Machine Learning is a branch of Artificial Intelligence (AI) that allows computers to learn from data without being explicitly programmed. Instead of following fixed instructions, ML algorithms discover patterns in data and use these patterns to make predictions or decisions. Over time, as they are exposed to more data, their performance improves.</p>
+                    <p class="mb-4"><strong>Key Idea:</strong> Machines "learn" from experience, just like humans do, by identifying trends and relationships in data.</p>
+
+                    <h4 class="sub-subsection-title">1.2 Why is Machine Learning Important?</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Handling Vast Data:</strong> We generate enormous amounts of data daily (thousands to billions of samples, millions of attributes). Humans cannot process this volume to find patterns. ML algorithms can.</li>
+                        <li class="key-concept"><strong>Finding Hidden Patterns:</strong> Many useful patterns in data are subtle, buried in "noise," or involve complex interactions, making them difficult for humans to spot. ML excels at this.</li>
+                        <li class="key-concept"><strong>Real-time Applications:</strong> In scenarios like analyzing streaming data (e.g., stock market data, sensor readings), decisions need to be made instantly. ML systems can operate in real-time, unlike human analysts.</li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">1.3 Applications of Machine Learning</h4>
+                    <p class="mb-4">ML is used across many industries and aspects of daily life:</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Commercial:</strong> Targeted advertising (e.g., showing ads based on your browsing history), recommender systems (e.g., suggesting movies on Netflix, products on Amazon), fraud detection (e.g., identifying suspicious credit card transactions).</li>
+                        <li class="key-concept"><strong>Finance:</strong> Predicting market movements, managing investment risks.</li>
+                        <li class="key-concept"><strong>Natural Language Processing (NLP):</strong> Speech recognition (e.g., Siri, Google Assistant), classifying documents (e.g., sorting emails), sentiment analysis (e.g., understanding opinions from social media).</li>
+                        <li class="key-concept"><strong>Computer Vision:</strong> Optical Character Recognition (OCR), face recognition, image classification.</li>
+                        <li class="key-concept"><strong>IT:</strong> Detecting network intrusions, filtering spam emails.</li>
+                        <li class="key-concept"><strong>Scientific:</strong> Environmental and climate modeling, gene sequencing, disease prediction.</li>
+                    </ul>
+                </div>
+                <div class="practical-section mt-8">
+                    <h3 class="subsection-title">Practical: Python Fundamentals & Project Setup</h3>
+                    <p class="mb-4">Here's a basic Python script demonstrating fundamental syntax. You can copy this code and run it in a Python environment like <a href="https://colab.research.google.com/" target="_blank" class="external-link">Google Colab</a>.</p>
+                    <div class="code-block-container">
+                        <div class="code-block-header">
+                            <span>Python Fundamentals Example</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                        </div>
+                        <pre class="code-block">
+# This is a simple Python script
+
+# Print a welcoming message
+print("Hello, Data Science!")
+
+# Perform a simple calculation
+num1 = 10
+num2 = 5
+sum_result = num1 + num2
+print(f"The sum of {num1} and {num2} is: {sum_result}")
+
+# Define a function
+def greet_user(name):
+    """
+    This function takes a name as input and returns a greeting string.
+    """
+    return f"Welcome, {name}!"
+
+# Call the function
+user_name = "Learner"
+greeting = greet_user(user_name)
+print(greeting)
+                        </pre>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600"><strong>Explanation:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                        <li><code>print():</code> A built-in function to display output to the console.</li>
+                        <li><strong>Variables (num1, num2, user_name):</strong> Used to store data.</li>
+                        <li><strong>Functions (greet_user):</strong> Reusable blocks of code that perform a specific task.</li>
+                        <li><strong>f-strings:</strong> A convenient way to embed expressions inside string literals.</li>
+                    </ul>
+                    <h4 class="sub-subsection-title">Setting up a Project on Local Repository linked to a GitHub repository:</h4>
+                    <p class="text-sm text-gray-600">While specific code snippets for GitHub Desktop setup are not directly provided in Python, the general workflow involves:</p>
+                    <ol class="list-decimal list-inside ml-4 text-sm text-gray-600">
+                        <li><strong>Initialize a local repository:</strong> In GitHub Desktop, you'd choose to "Create a New Repository on your hard drive" or "Add an Existing Local Repository."</li>
+                        <li><strong>Link to GitHub:</strong> After creating/adding locally, you can "Publish repository" to GitHub, which creates a remote copy and links your local one to it. Subsequent changes committed locally can be pushed to GitHub.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- 02. Types of Machine Learning -->
+            <div id="types-ml" class="section hidden">
+                <h2 class="section-title">02. Types of Machine Learning</h2>
+                <div class="theory-section">
+                    <h3 class="subsection-title">Theory</h3>
+                    <p class="mb-4">Machine Learning algorithms are broadly categorized based on the type of data they learn from and the nature of the problem they solve.</p>
+                    <h4 class="sub-subsection-title">2.1 Based on Type of Output</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Regression:</strong> Used when the output variable is a continuous numerical value (e.g., predicting house prices, temperature, stock values).</li>
+                        <li class="key-concept"><strong>Classification:</strong> Used when the output variable is a category or a label (e.g., predicting if an email is spam or not, classifying an image as a cat or dog).</li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">2.2 Based on Type of Data (Learning Paradigm)</h4>
+                    <p class="mb-4">This is a fundamental classification:</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Supervised Learning</th>
+                                <th>Unsupervised Learning</th>
+                                <th>Reinforcement Learning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Data Type</strong></td>
+                                <td><strong>Labeled Data:</strong> Input data is paired with correct output labels.</td>
+                                <td><strong>Unlabeled Data:</strong> Algorithms work with raw data to find hidden patterns.</td>
+                                <td><strong>Environment Interaction:</strong> An agent learns by interacting with an environment.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Goal</strong></td>
+                                <td>Predict outcomes for new, unseen data based on learned relationships.</td>
+                                <td>Discover inherent structures, groupings, or patterns in data.</td>
+                                <td>Learn optimal actions to maximize cumulative rewards over time.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Common Tasks</strong></td>
+                                <td>Classification, Regression, Recommender Systems.</td>
+                                <td>Clustering, Association Analysis, Dimensionality Reduction.</td>
+                                <td>Game Playing, Robotics, Autonomous Navigation, Recommendation Systems.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Real-world Examples</strong></td>
+                                <td>Risk Assessment, Image Classification, Fraud Detection, Spam Filtering.</td>
+                                <td>Customer Segmentation, Principal Component Analysis (PCA), Anomaly Detection.</td>
+                                <td>AlphaGo (AI for Go game), Self-driving Cars, Robotic Control.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 class="sub-subsection-title">2.3 Based on Type of Model</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Discriminative Models:</strong> These models directly learn the decision boundary between different classes. They focus on modeling the conditional probability $P(Y|X)$ (the probability of output Y given input X).
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li><strong>Examples:</strong> Logistic Regression, Support Vector Machines (SVMs), Neural Networks, Decision Trees, k-Nearest Neighbors (kNN), Random Forests.</li>
+                                <li><strong>Characteristic:</strong> Cannot generate new data. Primarily used for classification.</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Generative Models:</strong> These models learn the underlying distribution of the input data for each class. They model the joint probability $P(X,Y)$ (the probability of input X and output Y occurring together). They can then use Bayes' theorem to find $P(Y|X)$.
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li><strong>Examples:</strong> Hidden Markov Models, Naïve Bayes, Gaussian Mixture Models, Bayesian Networks, Generative Adversarial Networks (GANs).</li>
+                                <li><strong>Characteristic:</strong> Can generate new data. Often used for classification but can also be used for other tasks like data generation.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="practical-section mt-8">
+                    <h3 class="subsection-title">Practical: Understanding ML Paradigms</h3>
+                    <p class="mb-4">Understanding these types is crucial for choosing the right algorithm for a given problem. While there are no direct code examples for "types of ML" themselves, the practical sections for specific algorithms (like K-Means for unsupervised, Logistic Regression for supervised) will demonstrate these paradigms in action.</p>
+                </div>
+            </div>
+
+            <!-- 03. Data Science Workflow: CRISP-DM -->
+            <div id="crisp-dm" class="section hidden">
+                <h2 class="section-title">03. Data Science Workflow: CRISP-DM</h2>
+                <div class="theory-section">
+                    <h3 class="subsection-title">Theory</h3>
+                    <p class="mb-4">The CRoss Industry Standard Process for Data Mining (CRISP-DM) is a widely used methodology that outlines the typical phases of a data science project. It's an iterative process, meaning you might go back to earlier stages as you gain new insights.</p>
+                    <p class="mb-4">The six phases are:</p>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li class="key-concept"><strong>Business Understanding:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li><strong>Objective:</strong> Clearly define what the business wants to achieve. What is the problem you're trying to solve? What does success look like from a business perspective?</li>
+                                <li><strong>Tasks:</strong> Determine business objectives, assess the current situation (resources, risks), define data mining goals (what technical outcome signifies success), and produce a detailed project plan.</li>
+                                <li><strong>Example:</strong> A business wants to reduce customer churn. The objective is to identify customers at risk of leaving and intervene.</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Data Understanding:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li><strong>Objective:</strong> Get familiar with the data. What data do you have? What data do you need? Is it clean and reliable?</li>
+                                <li><strong>Tasks:</strong> Collect initial data, describe its properties (format, number of records), explore it (query, visualize, identify relationships), and verify its quality (identify missing values, errors).</li>
+                                <li><strong>Example:</strong> Gather customer transaction data, demographics. Check for missing values in age or purchase history.</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Data Preparation:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li><strong>Objective:</strong> Transform raw data into a suitable format for modeling. This is often the most time-consuming phase.</li>
+                                <li><strong>Tasks:</strong> Select relevant datasets, clean data (correct errors, handle missing values, remove outliers), construct new attributes (e.g., combine height and weight to calculate Body Mass Index), integrate data from multiple sources, and format data (e.g., convert text to numerical values).</li>
+                                <li><strong>Example:</strong> Fill in missing age values with the average age, create a 'customer loyalty score' from purchase frequency.</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Modeling:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li><strong>Objective:</strong> Apply various modeling techniques to the prepared data.</li>
+                                <li><strong>Tasks:</strong> Select appropriate modeling techniques (e.g., linear regression, neural networks), generate a test design (split data into training, validation, and test sets), build models (train the chosen algorithms on the training data), and assess models (interpret results, compare models based on predefined criteria).</li>
+                                <li><strong>Example:</strong> Train a logistic regression model and a decision tree model to predict customer churn.</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Evaluation:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li><strong>Objective:</strong> Evaluate the models against the business objectives.</li>
+                                <li><strong>Tasks:</strong> Evaluate results (do the models meet the business success criteria?), review the entire process (was anything overlooked?), and determine next steps (deploy, iterate, or start new projects).</li>
+                                <li><strong>Example:</strong> Compare the churn prediction accuracy of the logistic regression and decision tree models. If the decision tree is more accurate and interpretable, propose it for deployment.</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Deployment:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li><strong>Objective:</strong> Implement the selected model into a real-world setting.</li>
+                                <li><strong>Tasks:</strong> Plan deployment (how will the model be used?), plan monitoring and maintenance (how to ensure the model continues to perform well over time?), produce a final report, and review the project (retrospective on what went well and what could be improved).</li>
+                                <li><strong>Example:</strong> Integrate the churn prediction model into the customer relationship management (CRM) system. Set up automated alerts for high-risk customers.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+                <div class="practical-section mt-8">
+                    <h3 class="subsection-title">Practical: CRISP-DM in Action (Data Understanding & Preparation)</h3>
+                    <p class="mb-4">The CRISP-DM methodology is a conceptual framework. Its practical application involves using various tools and coding techniques within each phase. Here, we'll demonstrate practical steps for the Data Understanding and Data Preparation phases, using Pandas and NumPy.</p>
+                    <p class="mb-4">You can run this code in <a href="https://colab.research.google.com/" target="_blank" class="external-link">Google Colab</a>.</p>
+                    <h4 class="sub-subsection-title">1. Collect & Clean Data - Pandas</h4>
+                    <p class="text-sm text-gray-600 mb-2">Let's imagine we have a small dataset with some missing values and duplicates.</p>
+                    <div class="code-block-container">
+                        <div class="code-block-header">
+                            <span>Python Code: Data Cleaning</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                        </div>
+                        <pre class="code-block">
+import pandas as pd
+import numpy as np
+
+# Create a sample DataFrame
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie', 'Alice', 'David', 'Eve', 'Frank'],
+    'Age': [24, 27, 22, 24, np.nan, 29, 30],
+    'City': ['New York', 'Los Angeles', 'Chicago', 'New York', 'Houston', 'Miami', 'Chicago'],
+    'Salary': [70000, 80000, 60000, 70000, 90000, 75000, 65000]
+}
+df = pd.DataFrame(data)
+
+print("Original DataFrame:")
+print(df)
+print("\n---")
+
+# 1. Handling Missing Values: Fill NaN in 'Age' with the mean age
+mean_age = df['Age'].mean()
+df['Age'].fillna(mean_age, inplace=True)
+print("DataFrame after filling missing 'Age' values with mean:")
+print(df)
+print("\n---")
+
+# 2. Handling Duplicates: Remove duplicate rows
+df.drop_duplicates(inplace=True)
+print("DataFrame after removing duplicate rows:")
+print(df)
+print("\n---")
+
+# 3. Correcting Data Types (if necessary, though not strictly needed here)
+# Example: Convert 'Age' to integer if it became float due to NaN fill
+df['Age'] = df['Age'].astype(int)
+print("DataFrame after converting 'Age' to integer type:")
+print(df.dtypes)
+print(df)
+                        </pre>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600"><strong>Explanation:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                        <li><code>pd.DataFrame():</code> Creates a DataFrame from a dictionary.</li>
+                        <li><code>df.head(), df.info(), df.describe():</code> Useful for initial data understanding (not shown in example but commonly used).</li>
+                        <li><code>df.isnull().sum():</code> Counts missing values per column.</li>
+                        <li><code>df['Age'].fillna(mean_age, inplace=True):</code> Fills NaN (Not a Number) values in the 'Age' column with the calculated mean age. <code>inplace=True</code> modifies the DataFrame directly.</li>
+                        <li><code>df.drop_duplicates(inplace=True):</code> Removes rows that are exact duplicates. <code>inplace=True</code> modifies the DataFrame directly.</li>
+                        <li><code>df['Age'].astype(int):</code> Converts the data type of the 'Age' column to integer.</li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">2. Manipulate Data - Pandas, NumPy</h4>
+                    <div class="code-block-container">
+                        <div class="code-block-header">
+                            <span>Python Code: Data Manipulation</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                        </div>
+                        <pre class="code-block">
+import pandas as pd
+import numpy as np
+
+# Recreate a clean DataFrame for manipulation examples
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank'],
+    'Age': [24, 27, 22, 28, 29, 30],
+    'City': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami', 'Chicago'],
+    'Salary': [70000, 80000, 60000, 90000, 75000, 65000]
+}
+df = pd.DataFrame(data)
+
+print("DataFrame for manipulation examples:")
+print(df)
+print("\n---")
+
+# Filtering Data: Select rows where Age > 25
+filtered_df = df[df['Age'] > 25]
+print("DataFrame filtered by Age > 25:")
+print(filtered_df)
+print("\n---")
+
+# Sorting Data: Sort by Salary in descending order
+sorted_df = df.sort_values(by='Salary', ascending=False)
+print("DataFrame sorted by Salary (descending):")
+print(sorted_df)
+print("\n---")
+
+# Grouping and Aggregating Data: Calculate average salary by City
+avg_salary_by_city = df.groupby('City')['Salary'].mean().reset_index()
+print("Average Salary by City:")
+print(avg_salary_by_city)
+print("\n---")
+
+# NumPy Array Operations:
+# Create a NumPy array
+np_array = np.array([[1,2,3],[4,5,6]])
+print("NumPy Array:")
+print(np_array)
+print("\n---")
+
+# Perform element-wise addition
+added_array = np_array + 10
+print("NumPy Array after element-wise addition by 10:")
+print(added_array)
+print("\n---")
+
+# Matrix multiplication (example with compatible dimensions)
+np_array_2 = np.array([[7, 8], [9, 10], [11, 12]]) # 3x2 array
+dot_product = np.dot(np_array, np_array_2) # (2x3) . (3x2) = (2x2)
+print("NumPy Array dot product:")
+print(dot_product)
+                        </pre>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600"><strong>Explanation:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                        <li><strong>Pandas Filtering:</strong> <code>df[df['Age'] > 25]</code> uses boolean indexing to select rows where the 'Age' column satisfies the condition.</li>
+                        <li><strong>Pandas Sorting:</strong> <code>df.sort_values()</code> sorts the DataFrame based on specified columns.</li>
+                        <li><strong>Pandas Grouping:</strong> <code>df.groupby('City')['Salary'].mean()</code> groups the DataFrame by 'City' and then calculates the mean of 'Salary' for each group. <code>reset_index()</code> converts the grouped output back into a DataFrame.</li>
+                        <li><strong>NumPy Element-wise Operations:</strong> Arithmetic operations (like <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>) applied directly to NumPy arrays perform element-wise calculations.</li>
+                        <li><strong>NumPy Matrix Multiplication:</strong> <code>np.dot()</code> performs dot product (matrix multiplication) for arrays.</li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">3. Explore Data - Uncover problems & opportunities (EDA)</h4>
+                    <div class="code-block-container">
+                        <div class="code-block-header">
+                            <span>Python Code: Exploratory Data Analysis (EDA)</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                        </div>
+                        <pre class="code-block">
+import pandas as pd
+import numpy as np
+
+# Recreate a DataFrame for EDA examples
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank'],
+    'Age': [24, 27, 22, 28, 29, 30],
+    'City': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami', 'Chicago'],
+    'Salary': [70000, 80000, 60000, 90000, 75000, 65000],
+    'YearsExp': [2, 5, 1, 6, 4, 3]
+}
+df = pd.DataFrame(data)
+
+print("DataFrame for EDA examples:")
+print(df)
+print("\n---")
+
+# Get basic descriptive statistics for numerical columns
+print("Descriptive Statistics:")
+print(df.describe())
+print("\n---")
+
+# Get information about the DataFrame (data types, non-null values)
+print("DataFrame Info:")
+df.info()
+print("\n---")
+
+# Check for unique values in a categorical column
+print("Unique Cities:")
+print(df['City'].unique())
+print("\n---")
+
+# Count occurrences of each unique value in a categorical column
+print("Value Counts for City:")
+print(df['City'].value_counts())
+print("\n---")
+
+# Calculate correlation matrix for numerical columns
+print("Correlation Matrix:")
+print(df[['Age', 'Salary', 'YearsExp']].corr())
+                        </pre>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600"><strong>Explanation:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                        <li><code>df.describe():</code> Generates descriptive statistics (count, mean, std, min, max, quartiles) of numerical columns.</li>
+                        <li><code>df.info():</code> Provides a concise summary of a DataFrame, including data types of columns and non-null values.</li>
+                        <li><code>df['Column'].unique():</code> Returns an array of all unique values in a specified column.</li>
+                        <li><code>df['Column'].value_counts():</code> Returns a Series containing counts of unique values.</li>
+                        <li><code>df.corr():</code> Computes pairwise correlation of columns, excluding NA/null values. This helps understand relationships between numerical variables.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 04. K-Means Clustering -->
+            <div id="k-means" class="section hidden">
+                <h2 class="section-title">04. K-Means Clustering</h2>
+                <div class="theory-section">
+                    <h3 class="subsection-title">Theory</h3>
+                    <p class="mb-4">K-Means is a popular <strong>unsupervised learning</strong> algorithm used for <strong>clustering</strong> unlabeled data. Its goal is to group similar data points into a predefined number of clusters, denoted by $k$.</p>
+
+                    <h4 class="sub-subsection-title">4.1 Key Concepts</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Cluster:</strong> A collection of data items that are "similar" to each other and "dissimilar" to data items in other clusters.</li>
+                        <li class="key-concept"><strong>Centroid:</strong> The center point of a cluster. In K-Means, it's typically the mean of all data points within that cluster.</li>
+                        <li class="key-concept"><strong>Proximity Measure:</strong> A way to quantify how similar or dissimilar two data points are. Euclidean distance is commonly used.</li>
+                        <li class="key-concept"><strong>Criterion Function (Cost Function):</strong> A function that K-Means tries to minimize. It represents the overall within-cluster variation (how spread out the points are within their clusters).</li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">4.2 Euclidean Distance Formula</h4>
+                    <p class="mb-2">The distance between two points $x_i = (x_{i1}, x_{i2}, \dots, x_{ir})$ and $x_j = (x_{j1}, x_{j2}, \dots, x_{jr})$ in $r$-dimensional space is given by:</p>
+                    <div class="math-formula">
+                        $$d(x_i, x_j) = \sqrt{\sum_{k=1}^{r} (x_{ik} - x_{jk})^2}$$
+                    </div>
+                    <p class="mb-4">For a 2D space, the distance between $(x_1, y_1)$ and $(x_2, y_2)$ is:</p>
+                    <div class="math-formula">
+                        $$d((x_1, y_1), (x_2, y_2)) = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
+                    </div>
+
+                    <h4 class="sub-subsection-title">4.3 K-Means Algorithm Steps</h4>
+                    <p class="mb-4">The algorithm works iteratively:</p>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li class="key-concept"><strong>Initialization:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>Choose the number of clusters, $k$.</li>
+                                <li>Randomly select $k$ data points from your dataset to be the initial centroids.</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Assignment Step:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>For each data point, calculate its distance to all $k$ centroids using the Euclidean distance formula.</li>
+                                <li>Assign each data point to the cluster whose centroid is closest.</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Update Step:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>Recalculate the new centroids for each cluster by taking the average (mean) of all data points assigned to that cluster.</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Repeat:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>Repeat steps 2 and 3 until the cluster assignments no longer change, or a maximum number of iterations is reached. This is when the algorithm has "converged."</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h4 class="sub-subsection-title">4.4 Cost Function for K-Means</h4>
+                    <p class="mb-2">The cost function $J(c, \mu)$ aims to minimize the sum of squared distances between each data point and its assigned centroid:</p>
+                    <div class="math-formula">
+                        $$J(c, \mu) = \sum_{i=1}^{m} ||x^{(i)} - \mu_{c^{(i)}}||^2$$
+                    </div>
+                    <p class="mb-4">Where:</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>$m$ is the total number of data points.</li>
+                        <li>$x^{(i)}$ represents the $i^{th}$ data point.</li>
+                        <li>$\mu_{c^{(i)}}$ is the centroid to which $x^{(i)}$ is assigned.</li>
+                        <li>$||x^{(i)} - \mu_{c^{(i)}}||^2$ calculates the squared Euclidean distance between $x^{(i)}$ and its assigned centroid.</li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">4.5 K-Means Algorithm Example</h4>
+                    <p class="mb-2"><strong>Problem:</strong> Suppose we have 4 medicines (objects) with 2 attributes (Weight index, pH). We want to cluster them into 2 groups ($k=2$).</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Object</th>
+                                <th>Attribute 1: Weight index (X)</th>
+                                <th>Attribute 2: pH (Y)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Medicine A</td><td>1</td><td>1</td></tr>
+                            <tr><td>Medicine B</td><td>2</td><td>1</td></tr>
+                            <tr><td>Medicine C</td><td>4</td><td>3</td></tr>
+                            <tr><td>Medicine D</td><td>5</td><td>4</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="mt-4 mb-2"><strong>Solution Steps:</strong></p>
+                    <h5 class="font-semibold text-gray-700 mt-4 mb-2">Iteration 0: Initialization</h5>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li><strong>Initial Centroids:</strong> Let's choose Medicine A and Medicine B as the initial centroids.
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>$c_1 = (1, 1)$ (for Group 1)</li>
+                                <li>$c_2 = (2, 1)$ (for Group 2)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Objects-Centroids Distance Calculation:</strong> Calculate the Euclidean distance of each medicine to both initial centroids.</li>
+                    </ol>
+                    <p class="mb-2"><strong>Distance Matrix $D_0$:</strong></p>
+                    <table>
+                        <thead>
+                            <tr><th></th><th>$c_1=(1,1)$</th><th>$c_2=(2,1)$</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Med A</td><td>0</td><td>1</td></tr>
+                            <tr><td>Med B</td><td>1</td><td>0</td></tr>
+                            <tr><td>Med C</td><td>3.61</td><td>2.83</td></tr>
+                            <tr><td>Med D</td><td>5</td><td>4.24</td></tr>
+                        </tbody>
+                    </table>
+                    <ol class="list-decimal list-inside ml-4" start="3">
+                        <li><strong>Objects Clustering (Initial Assignment):</strong> Assign each medicine to the cluster with the minimum distance.</li>
+                    </ol>
+                    <p class="mb-2"><strong>Group Matrix $G_0$:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Group 1:</strong> {Medicine A}</li>
+                        <li><strong>Group 2:</strong> {Medicine B, Medicine C, Medicine D}</li>
+                    </ul>
+
+                    <h5 class="font-semibold text-gray-700 mt-4 mb-2">Iteration 1</h5>
+                    <ol class="list-decimal list-inside ml-4" start="4">
+                        <li><strong>Determine New Centroids:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li><strong>Group 1:</strong> Only {Medicine A} = {(1,1)}. So, $c_1$ remains $(1,1)$.</li>
+                                <li><strong>Group 2:</strong> {Medicine B, Medicine C, Medicine D} = {(2,1), (4,3), (5,4)}.
+                                    <ul class="list-circle list-inside ml-4 mt-1">
+                                        <li>New $c_2$ X-coordinate: $(2+4+5)/3 = 11/3 \approx 3.67$</li>
+                                        <li>New $c_2$ Y-coordinate: $(1+3+4)/3 = 8/3 \approx 2.67$</li>
+                                        <li>New $c_2 = (11/3, 8/3) \approx (3.67, 2.67)$</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>Objects-Centroids Distance Calculation (with new centroids):</strong></li>
+                    </ol>
+                    <p class="mb-2"><strong>Distance Matrix $D_1$:</strong></p>
+                    <table>
+                        <thead>
+                            <tr><th></th><th>$c_1=(1,1)$</th><th>$c_2=(3.67, 2.67)$</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Med A</td><td>0</td><td>3.14</td></tr>
+                            <tr><td>Med B</td><td>1</td><td>2.36</td></tr>
+                            <tr><td>Med C</td><td>3.61</td><td>0.47</td></tr>
+                            <tr><td>Med D</td><td>5</td><td>1.89</td></tr>
+                        </tbody>
+                    </table>
+                    <ol class="list-decimal list-inside ml-4" start="6">
+                        <li><strong>Objects Clustering (Re-assignment):</strong></li>
+                    </ol>
+                    <p class="mb-2"><strong>Group Matrix $G_1$:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Group 1:</strong> {Medicine A, Medicine B}</li>
+                        <li><strong>Group 2:</strong> {Medicine C, Medicine D}</li>
+                    </ul>
+
+                    <h5 class="font-semibold text-gray-700 mt-4 mb-2">Iteration 2</h5>
+                    <ol class="list-decimal list-inside ml-4" start="7">
+                        <li><strong>Determine New Centroids:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li><strong>Group 1:</strong> {Medicine A, Medicine B} = {(1,1), (2,1)}.
+                                    <ul class="list-circle list-inside ml-4 mt-1">
+                                        <li>New $c_1$ X-coordinate: $(1+2)/2 = 1.5$</li>
+                                        <li>New $c_1$ Y-coordinate: $(1+1)/2 = 1$</li>
+                                        <li>New $c_1 = (1.5, 1)$</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Group 2:</strong> {Medicine C, Medicine D} = {(4,3), (5,4)}.
+                                    <ul class="list-circle list-inside ml-4 mt-1">
+                                        <li>New $c_2$ X-coordinate: $(4+5)/2 = 4.5$</li>
+                                        <li>New $c_2$ Y-coordinate: $(3+4)/2 = 3.5$</li>
+                                        <li>New $c_2 = (4.5, 3.5)$</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>Objects-Centroids Distance Calculation (with new centroids):</strong></li>
+                    </ol>
+                    <p class="mb-2"><strong>Distance Matrix $D_2$:</strong></p>
+                    <table>
+                        <thead>
+                            <tr><th></th><th>$c_1=(1.5,1)$</th><th>$c_2=(4.5, 3.5)$</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Med A</td><td>0.5</td><td>4.30</td></tr>
+                            <tr><td>Med B</td><td>0.5</td><td>3.54</td></tr>
+                            <tr><td>Med C</td><td>3.20</td><td>0.71</td></tr>
+                            <tr><td>Med D</td><td>4.61</td><td>0.71</td></tr>
+                        </tbody>
+                    </table>
+                    <ol class="list-decimal list-inside ml-4" start="9">
+                        <li><strong>Objects Clustering (Re-assignment):</strong></li>
+                    </ol>
+                    <p class="mb-2"><strong>Group Matrix $G_2$:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Group 1:</strong> {Medicine A, Medicine B}</li>
+                        <li><strong>Group 2:</strong> {Medicine C, Medicine D}</li>
+                    </ul>
+                    <p class="mt-4">Since $G_2 = G_1$, the cluster assignments have stabilized. The algorithm has converged.</p>
+                    <p class="mt-4"><strong>Final Result:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Group 1:</strong> Medicine A, Medicine B</li>
+                        <li><strong>Group 2:</strong> Medicine C, Medicine D</li>
+                    </ul>
+                </div>
+                <div class="practical-section mt-8">
+                    <h3 class="subsection-title">Practical: K-Means Clustering with Scikit-learn (Customer Segmentation)</h3>
+                    <p class="mb-4">We'll demonstrate K-Means clustering using Scikit-learn on a synthetic dataset for customer segmentation. A popular real-world dataset for clustering is the <a href="https://www.kaggle.com/datasets/vjchoudhary7/customer-segmentation-tutorial-in-python" target="_blank" class="external-link">Mall Customer Segmentation Data</a> on Kaggle. Copy and run this code in <a href="https://colab.research.google.com/" target="_blank" class="external-link">Google Colab</a>.</p>
+                    <div class="code-block-container">
+                        <div class="code-block-header">
+                            <span>Python Code: K-Means Clustering</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                        </div>
+                        <pre class="code-block">
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler # For scaling data
+
+# 1. Generate some sample data for clustering
+# Imagine customer data: Annual Income and Spending Score
+np.random.seed(0)
+X_cluster = np.vstack([
+    np.random.normal(loc=[30, 40], scale=[10, 10], size=(50, 2)), # Cluster 1: Low Income, Low Spending
+    np.random.normal(loc=[70, 80], scale=[10, 10], size=(50, 2)), # Cluster 2: High Income, High Spending
+    np.random.normal(loc=[90, 20], scale=[10, 10], size=(50, 2)), # Cluster 3: High Income, Low Spending
+    np.random.normal(loc=[20, 70], scale=[10, 10], size=(50, 2))  # Cluster 4: Low Income, High Spending
+])
+df_cluster = pd.DataFrame(X_cluster, columns=['Annual Income (k$)', 'Spending Score (1-100)'])
+print("Sample Clustering Data (first 5 rows):")
+print(df_cluster.head())
+print("\n---")
+
+# 2. Preprocessing: Scale the data
+# Scaling is often crucial for distance-based algorithms like K-Means
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(df_cluster)
+print("Scaled Data (first 5 rows):")
+print(X_scaled[:5])
+print("\n---")
+
+# 3. Determine the optimal number of clusters (K) using the Elbow Method
+# The "inertia" (within-cluster sum of squares) is used.
+inertia_values = []
+max_k = 10
+for k in range(1, max_k + 1):
+    kmeans = KMeans(n_clusters=k, random_state=42, n_init=10) # n_init is important to avoid local minima
+    kmeans.fit(X_scaled)
+    inertia_values.append(kmeans.inertia_)
+
+plt.figure(figsize=(8, 5))
+plt.plot(range(1, max_k + 1), inertia_values, marker='o')
+plt.title('Elbow Method for Optimal K')
+plt.xlabel('Number of Clusters (K)')
+plt.ylabel('Inertia (Within-cluster sum of squares)')
+plt.xticks(range(1, max_k + 1))
+plt.grid(True)
+plt.show()
+print("Elbow Method plot displayed: Look for the 'elbow' point where the decrease in inertia starts to slow down.")
+print("\n---")
+
+# Based on the elbow plot, let's assume k=4 is optimal for this synthetic data
+optimal_k = 4
+# 4. Apply K-Means Clustering
+kmeans_model = KMeans(n_clusters=optimal_k, random_state=42, n_init=10)
+clusters = kmeans_model.fit_predict(X_scaled) # Assigns each data point to a cluster
+
+# Add cluster labels to the original DataFrame
+df_cluster['Cluster'] = clusters
+print(f"DataFrame with assigned Clusters (first 5 rows, showing optimal K= {optimal_k}):")
+print(df_cluster.head())
+print("\n---")
+
+# 5. Visualize the clusters
+plt.figure(figsize=(10, 7))
+# Plotting each cluster with a different color
+for i in range(optimal_k):
+    plt.scatter(df_cluster[df_cluster['Cluster'] == i]['Annual Income (k$)'],
+                df_cluster[df_cluster['Cluster'] == i]['Spending Score (1-100)'],
+                label=f'Cluster {i}', s=50, alpha=0.7)
+# Plot centroids
+centroids_scaled = kmeans_model.cluster_centers_
+# Inverse transform centroids to original scale for plotting
+centroids_original_scale = scaler.inverse_transform(centroids_scaled)
+plt.scatter(centroids_original_scale[:, 0], centroids_original_scale[:, 1],
+            s=200, c='red', marker='X', edgecolors='black', label='Centroids')
+plt.title(f'Customer Segments using K-Means (K={optimal_k})')
+plt.xlabel('Annual Income (k$)')
+plt.ylabel('Spending Score (1-100)')
+plt.legend()
+plt.grid(True)
+plt.show()
+print(f"Clustering plot displayed for K={optimal_k}, showing customer segments.")
+                        </pre>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600"><strong>Explanation:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                        <li><code>StandardScaler():</code> Scales the data so that it has zero mean and unit variance. This is important for K-Means because it is a distance-based algorithm, and features with larger ranges would disproportionately influence the distance calculation.</li>
+                        <li><code>KMeans(n_clusters=k, random_state=42, n_init=10):</code> Initializes the K-Means model.
+                            <ul class="list-circle list-inside ml-4">
+                                <li><code>n_clusters:</code> The number of clusters to form.</li>
+                                <li><code>random_state:</code> Ensures reproducibility of results.</li>
+                                <li><code>n_init=10:</code> Runs the algorithm 10 times with different centroid seeds and chooses the best result, which helps avoid suboptimal local minima.</li>
+                            </ul>
+                        </li>
+                        <li><code>kmeans.fit(X_scaled):</code> Trains the K-Means model on the scaled data.</li>
+                        <li><code>kmeans.inertia_:</code> The sum of squared distances of samples to their closest cluster center (the objective function of K-Means). This is used in the Elbow Method.</li>
+                        <li><code>kmeans_model.fit_predict(X_scaled):</code> Performs the clustering and returns an array of cluster labels for each data point.</li>
+                        <li><strong>Elbow Method:</strong> You plot the inertia values against the number of clusters (K). The "elbow" point in the graph (where the rate of decrease in inertia sharply slows down) is often considered a good estimate for the optimal K.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 05. Decision Trees -->
+            <div id="decision-trees" class="section hidden">
+                <h2 class="section-title">05. Decision Trees</h2>
+                <div class="theory-section">
+                    <h3 class="subsection-title">Theory</h3>
+                    <p class="mb-4">Decision Trees are a powerful and intuitive <strong>supervised learning</strong> algorithm primarily used for <strong>classification</strong> and <strong>regression</strong> problems. They work by breaking down a complex decision into a series of simpler, branching decisions, much like a flowchart.</p>
+
+                    <h4 class="sub-subsection-title">5.1 Structure of a Decision Tree</h4>
+                    <p class="mb-4">A decision tree is a tree-like model where:</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Root Node:</strong> The topmost node, representing the initial decision or feature that splits the data. It's the "best predictor."</li>
+                        <li class="key-concept"><strong>Decision Nodes:</strong> Nodes that split the data into further subsets based on a specific feature's value.</li>
+                        <li class="key-concept"><strong>Edges/Branches:</strong> Represent the outcomes or choices of a decision node.</li>
+                        <li class="key-concept"><strong>Leaf Nodes (Terminal Nodes):</strong> The end nodes of the tree that provide the final predicted class label or value.</li>
+                    </ul>
+                    <p class="mb-4">The core idea is to recursively partition the dataset into smaller, more homogeneous subsets until each subset contains data points primarily belonging to a single class.</p>
+
+                    <h4 class="sub-subsection-title">5.2 ID3 Algorithm for Building Decision Trees</h4>
+                    <p class="mb-4">The ID3 (Iterative Dichotomiser 3) algorithm is a common method for constructing decision trees. It uses a "top-down, greedy" approach, meaning it always selects the best attribute to split the data at each step, without looking ahead to future steps.</p>
+                    <p class="mb-4">ID3 relies on two key concepts: <strong>Entropy</strong> and <strong>Information Gain</strong>.</p>
+
+                    <h5 class="font-semibold text-gray-700 mt-4 mb-2">5.2.1 Entropy</h5>
+                    <p class="mb-2">Entropy is a measure of the <strong>uncertainty</strong> or <strong>impurity</strong> within a set of data.</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept">If a sample is <strong>completely homogeneous</strong> (all data points belong to the same class), its entropy is <strong>zero</strong>. There's no uncertainty.</li>
+                        <li class="key-concept">If a sample is <strong>equally divided</strong> (e.g., 50% one class, 50% another), its entropy is <strong>one</strong> (maximum uncertainty).</li>
+                    </ul>
+                    <p class="mb-2"><strong>Entropy Formula:</strong></p>
+                    <div class="math-formula">
+                        $$E(S) = \sum_{i=1}^{c} - p_i \log_2 p_i$$
+                    </div>
+                    <p class="mb-4">Where:</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>$S$ is the dataset (target attribute).</li>
+                        <li>$p_i$ is the proportion of data points in $S$ that belong to class $i$.</li>
+                        <li>$c$ is the number of classes in the target attribute.</li>
+                    </ul>
+
+                    <p class="mb-2"><strong>Example: Calculate Entropy of 'Play Tennis' (Target Attribute)</strong></p>
+                    <p class="mb-2">Assume a dataset with 14 observations where 9 'Yes' and 5 'No' for playing tennis.</p>
+                    <p class="mb-2">Given: $p_{Yes} = \frac{9}{14}$, $p_{No} = \frac{5}{14}$</p>
+                    <div class="math-formula">
+                        $$E(\text{Play Tennis}) = - \left( \frac{9}{14} \log_2 \frac{9}{14} \right) - \left( \frac{5}{14} \log_2 \frac{5}{14} \right)$$
+                        $$E(\text{Play Tennis}) = - \left( \frac{9}{14} \times (-0.635) \right) - \left( \frac{5}{14} \times (-1.485) \right)$$
+                        $$E(\text{Play Tennis}) = 0.409 + 0.530 = 0.939$$
+                    </div>
+
+                    <h5 class="font-semibold text-gray-700 mt-4 mb-2">5.2.2 Information Gain</h5>
+                    <p class="mb-2">Information Gain measures the <strong>reduction in entropy</strong> after a dataset is split based on an attribute. The attribute that provides the highest information gain is chosen as the splitting criterion (root node or decision node).</p>
+                    <p class="mb-2"><strong>Information Gain Formula:</strong></p>
+                    <div class="math-formula">
+                        $$Gain(S, A) = E(S) - \sum_{v \in Values(A)} \frac{|S_v|}{|S|} E(S_v)$$
+                    </div>
+                    <p class="mb-4">Where:</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>$S$ is the original dataset.</li>
+                        <li>$A$ is the attribute being evaluated for splitting.</li>
+                        <li>$Values(A)$ are the possible values of attribute $A$.</li>
+                        <li>$S_v$ is the subset of $S$ where attribute $A$ has value $v$.</li>
+                        <li>$|S_v|$ is the number of data points in $S_v$.</li>
+                        <li>$|S|$ is the total number of data points in $S$.</li>
+                    </ul>
+
+                    <p class="mb-2"><strong>Steps for ID3 Algorithm:</strong></p>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li><strong>Calculate Entropy of the Target Attribute $E(S)$:</strong> (Already done above for 'Play Tennis').</li>
+                        <li><strong>Calculate the Average Entropy for each Predictor Variable $E(S, X)$:</strong> This is the weighted average of the entropies of the subsets created by splitting on attribute $X$.
+                            <div class="math-formula">
+                                $$E(S, X) = \sum_{v \in Values(X)} \frac{|S_v|}{|S|} E(S_v)$$
+                            </div>
+                        </li>
+                        <li><strong>Calculate the Information Gain $Gain(S, X)$ for each attribute:</strong>
+                            <div class="math-formula">
+                                $$Gain(S, X) = E(S) - E(S, X)$$
+                            </div>
+                        </li>
+                        <li><strong>Select the Predictor with Maximum Information Gain:</strong> The attribute with the highest information gain is the best attribute to split on. It becomes the root node or a decision node.</li>
+                    </ol>
+
+                    <p class="mb-2"><strong>Example: Calculating Information Gain for 'Outlook'</strong></p>
+                    <p class="mb-2">Let's use the 'Play Tennis' dataset (14 total instances: 9 Yes, 5 No). $E(S) = 0.939$.</p>
+                    <p class="mb-2">Now, let's analyze the 'Outlook' attribute, which has three values: 'Sunny', 'Overcast', 'Rainy'.</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Outlook = Sunny:</strong> 5 instances (2 Yes, 3 No)
+                            <div class="math-formula">
+                                $$E(\text{Sunny}) = - \left( \frac{2}{5} \log_2 \frac{2}{5} \right) - \left( \frac{3}{5} \log_2 \frac{3}{5} \right) \approx 0.970$$
+                            </div>
+                        </li>
+                        <li><strong>Outlook = Overcast:</strong> 4 instances (4 Yes, 0 No)
+                            <div class="math-formula">
+                                $$E(\text{Overcast}) = 0$$
+                            </div>
+                        </li>
+                        <li><strong>Outlook = Rainy:</strong> 5 instances (3 Yes, 2 No)
+                            <div class="math-formula">
+                                $$E(\text{Rainy}) = - \left( \frac{3}{5} \log_2 \frac{3}{5} \right) - \left( \frac{2}{5} \log_2 \frac{2}{5} \right) \approx 0.970$$
+                            </div>
+                        </li>
+                    </ul>
+                    <p class="mb-2"><strong>Average Entropy for Outlook:</strong></p>
+                    <div class="math-formula">
+                        $$E(S, \text{Outlook}) = \frac{5}{14} E(\text{Sunny}) + \frac{4}{14} E(\text{Overcast}) + \frac{5}{14} E(\text{Rainy})$$
+                        $$E(S, \text{Outlook}) = \frac{5}{14} (0.970) + \frac{4}{14} (0) + \frac{5}{14} (0.970) \approx 0.692$$
+                    </div>
+                    <p class="mb-2"><strong>Information Gain for Outlook:</strong></p>
+                    <div class="math-formula">
+                        $$Gain(S, \text{Outlook}) = E(S) - E(S, \text{Outlook}) = 0.939 - 0.692 = 0.247$$
+                    </div>
+                    <p class="mb-4">You would repeat this process for 'Temperature', 'Humidity', and 'Wind'. The attribute with the highest Information Gain would be chosen as the root node.</p>
+
+                    <h5 class="font-semibold text-gray-700 mt-4 mb-2">5.2.3 Issues with Information Gain: "Super Attributes" and Gain Ratio</h5>
+                    <p class="mb-2">Information Gain has a bias towards attributes that have a large number of distinct values. Such "Super Attributes" might be chosen as the root node, leading to a wide, shallow tree that perfectly classifies the training data but performs poorly on new, unseen data (this is called <strong>overfitting</strong>).</p>
+                    <p class="mb-4">To address this, <strong>Gain Ratio</strong> is used. Gain Ratio penalizes attributes with many values by dividing the Information Gain by "Intrinsic Information" (also known as Split Information).</p>
+
+                    <h6 class="font-semibold text-gray-600 mt-2 mb-1">Intrinsic Information (Split Information)</h6>
+                    <p class="mb-2">Intrinsic Information measures the entropy of the attribute itself, indicating how much information is needed to determine the value of that attribute.</p>
+                    <p class="mb-2"><strong>Intrinsic Information Formula:</strong></p>
+                    <div class="math-formula">
+                        $$IntI(S, A) = - \sum_{v \in Values(A)} \frac{|S_v|}{|S|} \log_2 \frac{|S_v|}{|S|}$$
+                    </div>
+                    <p class="mb-2"><strong>Example: Intrinsic Information for Outlook</strong></p>
+                    <p class="mb-2">Sunny: 5/14, Overcast: 4/14, Rainy: 5/14</p>
+                    <div class="math-formula">
+                        $$IntI(S, \text{Outlook}) = - \left( \frac{5}{14} \log_2 \frac{5}{14} \right) - \left( \frac{4}{14} \log_2 \frac{4}{14} \right) - \left( \frac{5}{14} \log_2 \frac{5}{14} \right)$$
+                        $$IntI(S, \text{Outlook}) \approx 1.577$$
+                    </div>
+
+                    <h6 class="font-semibold text-gray-600 mt-2 mb-1">Gain Ratio Formula</h6>
+                    <div class="math-formula">
+                        $$GR(S, A) = \frac{Gain(S, A)}{IntI(S, A)}$$
+                    </div>
+                    <p class="mb-2"><strong>Example: Gain Ratio for Outlook</strong></p>
+                    <div class="math-formula">
+                        $$GR(S, \text{Outlook}) = \frac{0.247}{1.577} \approx 0.157$$
+                    </div>
+                    <p class="mb-4">The attribute with the highest Gain Ratio is chosen for splitting.</p>
+                </div>
+                <div class="practical-section mt-8">
+                    <h3 class="subsection-title">Practical: Decision Tree Implementation (Conceptual)</h3>
+                    <p class="mb-4">Building a decision tree from scratch using these formulas can be complex. In practice, libraries like Scikit-learn provide efficient implementations. While a full ID3 implementation is beyond the scope of a simple code runner, you can use Scikit-learn to build and visualize decision trees.</p>
+                    <p class="mb-4">Here's a conceptual example of how you would use Scikit-learn for classification with a Decision Tree. You can run this code in <a href="https://colab.research.google.com/" target="_blank" class="external-link">Google Colab</a>.</p>
+                    <div class="code-block-container">
+                        <div class="code-block-header">
+                            <span>Python Code: Decision Tree (Scikit-learn)</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                        </div>
+                        <pre class="code-block">
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier, export_graphviz
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.datasets import load_iris
+import graphviz # For visualization (requires installation: pip install graphviz)
+
+# 1. Load a sample dataset (Iris)
+iris = load_iris()
+X = pd.DataFrame(iris.data, columns=iris.feature_names)
+y = iris.target
+
+print("Iris Dataset Features (first 5 rows):")
+print(X.head())
+print("\nIris Dataset Target (first 5 values):")
+print(y[:5])
+print(f"Iris Target Names: {iris.target_names}")
+print("\n---")
+
+# 2. Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+print(f"Training set size: {len(X_train)} samples")
+print(f"Testing set size: {len(X_test)} samples")
+print("\n---")
+
+# 3. Create a Decision Tree Classifier model
+# You can control tree depth with max_depth to prevent overfitting
+model = DecisionTreeClassifier(max_depth=3, random_state=42)
+
+# 4. Train the model
+print("Training the Decision Tree model...")
+model.fit(X_train, y_train)
+print("Model training complete.")
+print("\n---")
+
+# 5. Make predictions on the test set
+y_pred = model.predict(X_test)
+print("First 10 actual Iris species from test set (numerical labels):")
+print(y_test[:10].values)
+print("First 10 predicted Iris species (numerical labels):")
+print(y_pred[:10])
+print("\n---")
+
+# 6. Evaluate the model's performance
+accuracy = accuracy_score(y_test, y_pred)
+class_report = classification_report(y_test, y_pred, target_names=iris.target_names)
+print(f"Accuracy Score: {accuracy:.2f}")
+print("\nClassification Report:")
+print(class_report)
+print("\n---")
+
+# 7. Visualize the Decision Tree (requires Graphviz installation and setup)
+# This part might not run directly in all environments without Graphviz setup.
+# In Google Colab, you might need: !pip install graphviz
+# And then use:
+# dot_data = export_graphviz(model, out_file=None,
+#                            feature_names=iris.feature_names,
+#                            class_names=iris.target_names,
+#                            filled=True, rounded=True,
+#                            special_characters=True)
+# graph = graphviz.Source(dot_data)
+# graph.render("iris_decision_tree", view=True) # Saves to a file and opens it
+# print("\nDecision tree visualization generated (check output directory or view if setup).")
+                        </pre>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600"><strong>Explanation:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                        <li><code>DecisionTreeClassifier:</code> Initializes the decision tree model. <code>max_depth</code> can be used to control the complexity of the tree.</li>
+                        <li><code>model.fit(X_train, y_train):</code> Trains the model on the training data.</li>
+                        <li><code>model.predict(X_test):</code> Makes predictions on the test set.</li>
+                        <li><code>accuracy_score(), classification_report():</code> Evaluate the model's performance.</li>
+                        <li><strong>Visualization:</strong> The commented-out section shows how to visualize the tree. This often requires additional software (Graphviz) to render the tree structure.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 06. Logistic Regression -->
+            <div id="logistic-regression" class="section hidden">
+                <h2 class="section-title">06. Logistic Regression</h2>
+                <div class="theory-section">
+                    <h3 class="subsection-title">Theory</h3>
+                    <p class="mb-4">Logistic Regression is a <strong>classification algorithm</strong> that uses regression analysis. Despite its name, it's primarily used for <strong>binary classification</strong> problems (where the outcome has two categories, like "Yes/No", "Pass/Fail"). It models the probability of a binary outcome.</p>
+
+                    <h4 class="sub-subsection-title">6.1 Rationale for Logistic Regression</h4>
+                    <p class="mb-4">Unlike simple linear regression which predicts a continuous output, logistic regression predicts the probability of an event occurring. Since probabilities are always between 0 and 1, a standard linear model $Y = \beta_0 + \beta_1X$ is not suitable because its output can be any real number.</p>
+                    <p class="mb-4">Logistic regression uses a special function called the <strong>sigmoid function</strong> to "squash" the linear output into a probability between 0 and 1.</p>
+
+                    <h4 class="sub-subsection-title">6.2 Types of Variables</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Dependent Variable (Target):</strong> Must be categorical or binary (e.g., 0 or 1, True or False).</li>
+                        <li class="key-concept"><strong>Independent Variables (Predictors):</strong> Can be continuous, discrete ordinal, or discrete nominal.</li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">6.3 The Logistic Regression Model</h4>
+                    <p class="mb-2">The core of logistic regression is to model the <strong>log-odds</strong> (or <strong>logit</strong>) of the event.</p>
+                    <p class="mb-2"><strong>Odds:</strong> The ratio of the probability of an event happening ($p$) to the probability of it not happening ($1-p$).</p>
+                    <div class="math-formula">
+                        $$Odds = \frac{p}{1-p}$$
+                    </div>
+                    <p class="mb-2"><strong>Logit (Log-Odds):</strong> The natural logarithm of the odds.</p>
+                    <div class="math-formula">
+                        $$logit(p) = \log\left(\frac{p}{1-p}\right)$$
+                    </div>
+                    <p class="mb-2">The logistic regression model assumes a linear relationship between the predictor variables ($X$) and the log-odds:</p>
+                    <div class="math-formula">
+                        $$\log\left(\frac{p}{1-p}\right) = \beta_0 + \beta_1X$$
+                    </div>
+                    <p class="mb-4">Where:</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>$p$ is the probability of the event occurring.</li>
+                        <li>$X$ is the independent variable.</li>
+                        <li>$\beta_0$ is the intercept.</li>
+                        <li>$\beta_1$ is the coefficient for $X$.</li>
+                    </ul>
+                    <p class="mb-2">To get the probability $p$ from the log-odds, we use the inverse of the logit function, which is the <strong>sigmoid function</strong>:</p>
+                    <div class="math-formula">
+                        $$p = \frac{e^{\beta_0 + \beta_1X}}{1 + e^{\beta_0 + \beta_1X}}$$
+                    </div>
+                    <p class="mb-4">This is equivalent to:</p>
+                    <div class="math-formula">
+                        $$p = \frac{Odds}{1 + Odds}$$
+                    </div>
+
+                    <h4 class="sub-subsection-title">6.4 Interpreting Odds and Logits</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Probability (p) ranges from 0 to 1.</strong></li>
+                        <li class="key-concept"><strong>Odds range from 0 to $\infty$.</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>If $p = 0.5$, $Odds = 1$ (even chances).</li>
+                                <li>If $p < 0.5$, $Odds < 1$.</li>
+                                <li>If $p > 0.5$, $Odds > 1$.</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Logit (log-odds) ranges from $-\infty$ to $+\infty$.</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>If $p = 0.5$, $logit(p) = 0$.</li>
+                                <li>If $p < 0.5$, $logit(p) < 0$.</li>
+                                <li>If $p > 0.5$, $logit(p) > 0$.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">6.5 Example: Contraceptive Use Data</h4>
+                    <p class="mb-2"><strong>Problem:</strong> Calculate the odds and logit of contraceptive use based on a dataset.</p>
+                    <p class="mb-2"><strong>Data:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>Total 'Yes' (contraceptive use): 507</li>
+                        <li>Total 'No' (non-use): 1100</li>
+                        <li>Grand Total: 1607</li>
+                    </ul>
+                    <p class="mt-4 mb-2"><strong>Solution:</strong></p>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li><strong>Calculate Probabilities:</strong>
+                            <div class="math-formula">
+                                $$p_{Yes} = \frac{\text{Number of Yes}}{\text{Grand Total}} = \frac{507}{1607} \approx 0.3155$$
+                                $$p_{No} = \frac{\text{Number of No}}{\text{Grand Total}} = \frac{1100}{1607} \approx 0.6845$$
+                            </div>
+                        </li>
+                        <li><strong>Calculate Odds:</strong>
+                            <div class="math-formula">
+                                $$Odds = \frac{p_{Yes}}{p_{No}} = \frac{507/1607}{1100/1607} = \frac{507}{1100} \approx 0.4609$$
+                            </div>
+                        </li>
+                        <li><strong>Calculate Logit (Log-Odds):</strong> Using natural logarithm (ln).
+                            <div class="math-formula">
+                                $$Logit = \ln(Odds) = \ln(0.4609) \approx -0.7746$$
+                            </div>
+                        </li>
+                    </ol>
+
+                    <h4 class="sub-subsection-title">6.6 Odds Ratio (OR)</h4>
+                    <p class="mb-2">The Odds Ratio is a measure of association between an exposure and an outcome. It compares the odds of an event occurring in one group to the odds of it occurring in another group.</p>
+                    <div class="math-formula">
+                        $$OR = \frac{\text{Odds of success for Group A}}{\text{Odds of success for Group B}}$$
+                    </div>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept">If $OR = 1$: The chances of success are the same in both groups.</li>
+                        <li class="key-concept">If $OR > 1$: The event is more likely to occur in Group A compared to Group B.</li>
+                        <li class="key-concept">If $OR < 1$: The event is less likely to occur in Group A compared to Group B.</li>
+                    </ul>
+
+                    <p class="mb-2"><strong>Example: Success Rates for New vs. Standard Treatment</strong></p>
+                    <p class="mb-2"><strong>Data:</strong></p>
+                    <table>
+                        <thead>
+                            <tr><th>Group</th><th>Success</th><th>Failure</th><th>Total</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>New</td><td>20</td><td>30</td><td>50</td></tr>
+                            <tr><td>Standard</td><td>10</td><td>40</td><td>50</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="mt-4 mb-2"><strong>Solution:</strong></p>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li><strong>Probability of Success:</strong>
+                            <div class="math-formula">
+                                $$\pi_{new} = P(\text{Success | New}) = \frac{20}{50} = 0.40$$
+                                $$\pi_{std} = P(\text{Success | Standard}) = \frac{10}{50} = 0.20$$
+                            </div>
+                        </li>
+                        <li><strong>Odds of Success:</strong>
+                            <div class="math-formula">
+                                $$Odds_{new} = \frac{\pi_{new}}{1 - \pi_{new}} = \frac{0.40}{1 - 0.40} = \frac{0.40}{0.60} = \frac{2}{3} \approx 0.6667$$
+                                $$Odds_{std} = \frac{\pi_{std}}{1 - \pi_{std}} = \frac{0.20}{1 - 0.20} = \frac{0.20}{0.80} = \frac{1}{4} = 0.25$$
+                            </div>
+                        </li>
+                        <li><strong>Odds Ratio:</strong> (New treatment compared to Standard)
+                            <div class="math-formula">
+                                $$OR = \frac{Odds_{new}}{Odds_{std}} = \frac{0.6667}{0.25} \approx 2.6668$$
+                            </div>
+                        </li>
+                    </ol>
+                    <p class="mb-4"><strong>Interpretation:</strong> The odds of success with the new treatment are approximately 2.67 times higher than with the standard treatment.</p>
+                </div>
+                <div class="practical-section mt-8">
+                    <h3 class="subsection-title">Practical: Logistic Regression with Scikit-learn (Iris Dataset)</h3>
+                    <p class="mb-4">We'll demonstrate a simple classification using Logistic Regression on the famous Iris dataset, which is built into Scikit-learn. You can also find many other classification datasets on <a href="https://www.kaggle.com/datasets?topic=classification" target="_blank" class="external-link">Kaggle</a>. Copy and run this code in <a href="https://colab.research.google.com/" target="_blank" class="external-link">Google Colab</a>.</p>
+                    <div class="code-block-container">
+                        <div class="code-block-header">
+                            <span>Python Code: Logistic Regression Classification</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                        </div>
+                        <pre class="code-block">
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.datasets import load_iris # A famous dataset for classification
+
+# 1. Load the Iris dataset
+iris = load_iris()
+X = pd.DataFrame(iris.data, columns=iris.feature_names)
+y = iris.target # Target classes (0, 1, 2 representing different Iris species)
+print("Iris Dataset Features (first 5 rows):")
+print(X.head())
+print("\nIris Dataset Target (first 5 values):")
+print(y[:5])
+print(f"Iris Target Names: {iris.target_names}")
+print("\n---")
+
+# 2. Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
+                                                    random_state=42, stratify=y)
+# stratify=y ensures that the proportion of target classes is the same in train and test sets
+print(f"Training set size: {len(X_train)} samples")
+print(f"Testing set size: {len(X_test)} samples")
+print("\n---")
+
+# 3. Create a Logistic Regression model
+# max_iter is increased for convergence in some cases
+model = LogisticRegression(max_iter=200, solver='liblinear') # solver='liblinear' is good for small datasets
+
+# 4. Train the model
+print("Training the Logistic Regression model...")
+model.fit(X_train, y_train)
+print("Model training complete.")
+print("\n---")
+
+# 5. Make predictions on the test set
+y_pred = model.predict(X_test)
+print("First 10 actual Iris species from test set (numerical labels):")
+print(y_test[:10].values)
+print("First 10 predicted Iris species (numerical labels):")
+print(y_pred[:10])
+print("\n---")
+
+# 6. Evaluate the model's performance
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+class_report = classification_report(y_test, y_pred, target_names=iris.target_names)
+print(f"Accuracy Score: {accuracy:.2f}")
+print("\nConfusion Matrix:")
+print(conf_matrix)
+print("\nClassification Report:")
+print(class_report)
+                        </pre>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600"><strong>Explanation:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                        <li><code>load_iris():</code> A built-in dataset in Scikit-learn for classification tasks.</li>
+                        <li><code>stratify=y:</code> This argument in <code>train_test_split</code> is important for classification tasks, especially with imbalanced datasets. It ensures that the proportions of target classes in the training and testing sets are roughly the same as in the original dataset.</li>
+                        <li><code>LogisticRegression():</code> Initializes the logistic regression model.</li>
+                        <li><code>model.fit(X_train, y_train):</code> The model learns to map features to classes.</li>
+                        <li><code>model.predict(X_test):</code> Predicts the class labels for the test data.</li>
+                        <li><code>accuracy_score():</code> Calculates the proportion of correct predictions.</li>
+                        <li><code>confusion_matrix():</code> A table showing true positives, true negatives, false positives, and false negatives.</li>
+                        <li><code>classification_report():</code> Provides a detailed summary of precision, recall, f1-score, and support for each class.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 07. Naïve Bayes Classifier -->
+            <div id="naive-bayes" class="section hidden">
+                <h2 class="section-title">07. Naïve Bayes Classifier</h2>
+                <div class="theory-section">
+                    <h3 class="subsection-title">Theory</h3>
+                    <p class="mb-4">The Naïve Bayes Classifier is a simple yet powerful <strong>supervised learning</strong> algorithm used for <strong>classification</strong> tasks. It's based on Bayes' Theorem and makes a "naïve" assumption of conditional independence between features.</p>
+
+                    <h4 class="sub-subsection-title">7.1 Bayes' Theorem</h4>
+                    <p class="mb-2">Bayes' Theorem describes the probability of an event, based on prior knowledge of conditions that might be related to the event.</p>
+                    <div class="math-formula">
+                        $$P(A|B) = \frac{P(B|A) P(A)}{P(B)}$$
+                    </div>
+                    <p class="mb-4">Where:</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>$P(A|B)$: Posterior probability of event A given event B.</li>
+                        <li>$P(B|A)$: Likelihood of event B given event A.</li>
+                        <li>$P(A)$: Prior probability of event A.</li>
+                        <li>$P(B)$: Prior probability of event B.</li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">7.2 Naïve Bayes Assumption</h4>
+                    <p class="mb-2">The "naïve" part of Naïve Bayes is the assumption that <strong>all features are independent of each other given the class label.</strong> This simplifies the calculations significantly, even if it's rarely perfectly true in real-world data.</p>
+                    <p class="mb-4">If we have a class $C$ and features $X = (x_1, x_2, \dots, x_n)$, the Naïve Bayes classifier aims to find the class $C_k$ that maximizes $P(C_k|X)$.</p>
+                    <p class="mb-2">Using Bayes' Theorem:</p>
+                    <div class="math-formula">
+                        $$P(C_k|X) = \frac{P(X|C_k) P(C_k)}{P(X)}$$
+                    </div>
+                    <p class="mb-2">Due to the independence assumption, $P(X|C_k)$ can be expanded as:</p>
+                    <div class="math-formula">
+                        $$P(X|C_k) = P(x_1|C_k) \times P(x_2|C_k) \times \dots \times P(x_n|C_k)$$
+                    </div>
+                    <p class="mb-4">So, to classify a new instance $X$, we calculate $P(C_k) \prod_{i=1}^{n} P(x_i|C_k)$ for each class $C_k$ and choose the class with the highest value. Note that $P(X)$ is a normalizing constant and doesn't affect the comparison between classes, so it can be ignored during classification.</p>
+
+                    <h4 class="sub-subsection-title">7.3 How to Estimate Probabilities from Data</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Class Probability $P(C_k)$:</strong>
+                            <div class="math-formula">
+                                $$P(C_k) = \frac{\text{Number of instances in class } C_k}{\text{Total number of instances}}$$
+                            </div>
+                        </li>
+                        <li class="key-concept"><strong>Conditional Probability $P(x_i|C_k)$ for Categorical Attributes:</strong>
+                            <div class="math-formula">
+                                $$P(x_i|C_k) = \frac{\text{Number of instances with feature value } x_i \text{ in class } C_k}{\text{Number of instances in class } C_k}$$
+                            </div>
+                        </li>
+                        <li class="key-concept"><strong>Conditional Probability $P(x_i|C_k)$ for Continuous/Numerical Attributes:</strong>
+                            <p class="mb-2">For continuous attributes, we often assume they follow a <strong>Normal (Gaussian) distribution</strong>. The probability density function (PDF) for a normal distribution is used:</p>
+                            <div class="math-formula">
+                                $$f(x_i | C_k) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x_i - \mu)^2}{2\sigma^2}}$$
+                            </div>
+                            <p class="mb-4">Where:</p>
+                            <ul class="list-circle list-inside ml-4">
+                                <li>$\mu$: Mean of the feature $x_i$ for instances in class $C_k$.</li>
+                                <li>$\sigma^2$: Variance of the feature $x_i$ for instances in class $C_k$.</li>
+                                <li>These parameters ($\mu$, $\sigma^2$) are estimated from the training data for each feature and each class.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">7.4 Example: Classifying 'Evade'</h4>
+                    <p class="mb-2"><strong>Goal:</strong> Classify a new tuple $X = (\text{Refund = No, Marital Status = Divorced, Taxable Income = 120K})$ as 'Evade=Yes' or 'Evade=No'.</p>
+                    <p class="mb-2"><strong>Training Data:</strong></p>
+                    <table>
+                        <thead>
+                            <tr><th>Tid</th><th>Refund</th><th>Marital Status</th><th>Taxable Income</th><th>Evade</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>Yes</td><td>Single</td><td>125K</td><td>No</td></tr>
+                            <tr><td>2</td><td>No</td><td>Married</td><td>100K</td><td>No</td></tr>
+                            <tr><td>3</td><td>No</td><td>Single</td><td>70K</td><td>No</td></tr>
+                            <tr><td>4</td><td>Yes</td><td>Married</td><td>120K</td><td>No</td></tr>
+                            <tr><td>5</td><td>No</td><td>Divorced</td><td>95K</td><td>Yes</td></tr>
+                            <tr><td>6</td><td>No</td><td>Married</td><td>60K</td><td>No</td></tr>
+                            <tr><td>7</td><td>Yes</td><td>Divorced</td><td>220K</td><td>No</td></tr>
+                            <tr><td>8</td><td>No</td><td>Single</td><td>85K</td><td>Yes</td></tr>
+                            <tr><td>9</td><td>No</td><td>Married</td><td>75K</td><td>No</td></tr>
+                            <tr><td>10</td><td>No</td><td>Single</td><td>90K</td><td>Yes</td></tr>
+                        </tbody>
+                    </table>
+
+                    <p class="mt-4 mb-2"><strong>Solution Steps:</strong></p>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li><strong>Calculate Prior Probabilities $P(\text{Evade=Yes})$ and $P(\text{Evade=No})$:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>Total instances = 10</li>
+                                <li>Instances with 'Evade=Yes' = 3</li>
+                                <li>Instances with 'Evade=No' = 7</li>
+                            </ul>
+                            <div class="math-formula">
+                                $$P(\text{Evade=Yes}) = \frac{3}{10} = 0.3$$
+                                $$P(\text{Evade=No}) = \frac{7}{10} = 0.7$$
+                            </div>
+                        </li>
+                        <li><strong>Calculate Conditional Probabilities for each feature, given each class:</strong></li>
+                    </ol>
+                    <h5 class="font-semibold text-gray-700 mt-4 mb-2">For Class = 'Evade=No' (7 instances):</h5>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Refund:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>P(Refund=Yes | No) = 3/7</li>
+                                <li>P(Refund=No | No) = 4/7</li>
+                            </ul>
+                        </li>
+                        <li><strong>Marital Status:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>P(Single | No) = 3/7</li>
+                                <li>P(Divorced | No) = 1/7</li>
+                                <li>P(Married | No) = 3/7</li>
+                            </ul>
+                        </li>
+                        <li><strong>Taxable Income (Continuous):</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>For 'Evade=No' incomes: 125, 100, 70, 120, 60, 220, 75</li>
+                                <li>Mean ($\mu_{No}$) = 110</li>
+                                <li>Variance ($\sigma^2_{No}$) = 2975</li>
+                                <li>$P(\text{Income=120K | No}) \approx 0.0072$ (using Normal PDF)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <h5 class="font-semibold text-gray-700 mt-4 mb-2">For Class = 'Evade=Yes' (3 instances):</h5>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Refund:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>P(Refund=Yes | Yes) = 0/3 = 0</li>
+                                <li>P(Refund=No | Yes) = 3/3 = 1</li>
+                            </ul>
+                        </li>
+                        <li><strong>Marital Status:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>P(Single | Yes) = 2/3</li>
+                                <li>P(Divorced | Yes) = 1/3</li>
+                                <li>P(Married | Yes) = 0/3 = 0</li>
+                            </ul>
+                        </li>
+                        <li><strong>Taxable Income (Continuous):</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>For 'Evade=Yes' incomes: 95, 85, 90</li>
+                                <li>Mean ($\mu_{Yes}$) = 90</li>
+                                <li>Variance ($\sigma^2_{Yes}$) = 25</li>
+                                <li>$P(\text{Income=120K | Yes}) \approx 1.2 \times 10^{-9}$ (using Normal PDF)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ol class="list-decimal list-inside ml-4" start="3">
+                        <li><strong>Calculate Posterior Probabilities (Numerator part of Bayes' Theorem):</strong>
+                            <div class="math-formula">
+                                $$P(X | \text{Evade=No}) = P(\text{Refund=No | No}) \times P(\text{Divorced | No}) \times P(\text{Income=120K | No})$$
+                                $$P(X | \text{Evade=No}) = \frac{4}{7} \times \frac{1}{7} \times 0.0072 \approx 0.00058$$
+                            </div>
+                            <div class="math-formula">
+                                $$P(X | \text{Evade=Yes}) = P(\text{Refund=No | Yes}) \times P(\text{Divorced | Yes}) \times P(\text{Income=120K | Yes})$$
+                                $$P(X | \text{Evade=Yes}) = 1 \times \frac{1}{3} \times (1.2 \times 10^{-9}) \approx 4 \times 10^{-10}$$
+                            </div>
+                        </li>
+                        <li><strong>Compare:</strong>
+                            <div class="math-formula">
+                                $$P(X | \text{Evade=No}) P(\text{Evade=No}) = 0.00058 \times 0.7 = 0.000406$$
+                                $$P(X | \text{Evade=Yes}) P(\text{Evade=Yes}) = (4 \times 10^{-10}) \times 0.3 = 1.2 \times 10^{-10}$$
+                            </div>
+                        </li>
+                    </ol>
+                    <p class="mb-4">Since $0.000406 > 1.2 \times 10^{-10}$, the Naïve Bayes classifier predicts that for tuple $X$, the class is <strong>'Evade=No'</strong>.</p>
+
+                    <h4 class="sub-subsection-title">7.5 Issues with Naïve Bayes: Zero-Frequency Problem</h4>
+                    <p class="mb-2">If a particular attribute value never appears with a certain class in the training data, then the conditional probability $P(x_i|C_k)$ will be zero. This causes the entire product $\prod P(x_i|C_k)$ to become zero, meaning the posterior probability for that class will be zero, regardless of other strong evidence. This can lead to misclassifications.</p>
+                    <p class="mb-2"><strong>Solution: Laplace Smoothing (or Add-One Smoothing)</strong><br>To prevent zero probabilities, a small constant (typically 1) is added to the count of each attribute value for each class, and to the denominator.</p>
+                    <p class="mb-2"><strong>Laplace-corrected Probability:</strong></p>
+                    <div class="math-formula">
+                        $$P(x_i|C_k) = \frac{N_{ic} + 1}{N_c + m}$$
+                    </div>
+                    <p class="mb-4">Where:</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>$N_{ic}$: Number of instances having attribute value $x_i$ in class $C_k$.</li>
+                        <li>$N_c$: Number of instances in class $C_k$.</li>
+                        <li>$m$: Number of possible values for the attribute (or sometimes total number of attributes).</li>
+                    </ul>
+                </div>
+                <div class="practical-section mt-8">
+                    <h3 class="subsection-title">Practical: Naïve Bayes with Scikit-learn</h3>
+                    <p class="mb-4">Scikit-learn provides various Naïve Bayes classifiers (e.g., GaussianNB for continuous data, MultinomialNB for count data, BernoulliNB for binary data). Here's a basic example using Gaussian Naïve Bayes.</p>
+                    <p class="mb-4">You can run this code in <a href="https://colab.research.google.com/" target="_blank" class="external-link">Google Colab</a>.</p>
+                    <div class="code-block-container">
+                        <div class="code-block-header">
+                            <span>Python Code: Gaussian Naïve Bayes</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                        </div>
+                        <pre class="code-block">
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.datasets import load_iris # Using Iris again for simplicity
+
+# 1. Load the Iris dataset
+iris = load_iris()
+X = pd.DataFrame(iris.data, columns=iris.feature_names)
+y = iris.target
+
+print("Iris Dataset Features (first 5 rows):")
+print(X.head())
+print("\nIris Dataset Target (first 5 values):")
+print(y[:5])
+print(f"Iris Target Names: {iris.target_names}")
+print("\n---")
+
+# 2. Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+print(f"Training set size: {len(X_train)} samples")
+print(f"Testing set size: {len(X_test)} samples")
+print("\n---")
+
+# 3. Create a Gaussian Naïve Bayes model
+model = GaussianNB()
+
+# 4. Train the model
+print("Training the Gaussian Naïve Bayes model...")
+model.fit(X_train, y_train)
+print("Model training complete.")
+print("\n---")
+
+# 5. Make predictions on the test set
+y_pred = model.predict(X_test)
+print("First 10 actual Iris species from test set (numerical labels):")
+print(y_test[:10].values)
+print("First 10 predicted Iris species (numerical labels):")
+print(y_pred[:10])
+print("\n---")
+
+# 6. Evaluate the model's performance
+accuracy = accuracy_score(y_test, y_pred)
+class_report = classification_report(y_test, y_pred, target_names=iris.target_names)
+print(f"Accuracy Score: {accuracy:.2f}")
+print("\nClassification Report:")
+print(class_report)
+                        </pre>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600"><strong>Explanation:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                        <li><code>GaussianNB():</code> Initializes the Gaussian Naïve Bayes model, suitable for continuous data that is assumed to be normally distributed.</li>
+                        <li><code>model.fit(X_train, y_train):</code> Trains the model.</li>
+                        <li><code>model.predict(X_test):</code> Makes predictions.</li>
+                        <li><code>accuracy_score(), classification_report():</code> Evaluate the model.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 08. Support Vector Machines (SVM) -->
+            <div id="svm" class="section hidden">
+                <h2 class="section-title">08. Support Vector Machines (SVM)</h2>
+                <div class="theory-section">
+                    <h3 class="subsection-title">Theory</h3>
+                    <p class="mb-4">Support Vector Machines (SVMs) are powerful <strong>supervised learning</strong> algorithms primarily used for <strong>classification</strong>, though they can be adapted for regression. Their core idea is to find the "best" hyperplane that separates data points of different classes in a high-dimensional space.</p>
+
+                    <h4 class="sub-subsection-title">8.1 Linear Separation</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Concept:</strong> If data points belonging to different classes can be perfectly separated by a straight line (in 2D), a plane (in 3D), or a hyperplane (in higher dimensions), the data is said to be <strong>linearly separable</strong>.</li>
+                        <li class="key-concept"><strong>Goal of SVM:</strong> For linearly separable data, SVM aims to find the hyperplane that maximizes the <strong>margin</strong> between the classes.</li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">8.2 The Hyperplane and Margin</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Hyperplane (Decision Boundary):</strong> A dividing line or plane that separates the data points of different classes.
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>Its general form is: $w^T x + w_0 = 0$</li>
+                                <li>$w$: Weight vector (perpendicular to the hyperplane).</li>
+                                <li>$x$: Input vector (a data point).</li>
+                                <li>$w_0$: Bias term (determines the offset of the hyperplane from the origin).</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Support Vectors:</strong> These are the data points closest to the separating hyperplane. They "support" the hyperplane and are critical for defining the margin. If you remove a support vector, the hyperplane's position and orientation might change.</li>
+                        <li class="key-concept"><strong>Margin:</strong> The distance between the separating hyperplane and the nearest data points (support vectors) from both classes. SVM seeks to maximize this margin because a larger margin generally leads to better generalization performance on unseen data.
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>The margin is defined by two parallel "support vector hyperplanes":
+                                    <div class="math-formula">
+                                        $$w^T x + w_0 = +1 \quad (\text{for positive class support vectors})$$
+                                        $$w^T x + w_0 = -1 \quad (\text{for negative class support vectors})$$
+                                    </div>
+                                </li>
+                                <li>The width of the margin is $m = \frac{2}{||w||}$, where $||w||$ is the Euclidean norm (magnitude) of the weight vector $w$. Maximizing the margin is equivalent to minimizing $||w||$.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">8.3 Steps to Calculate the Hyperplane Function (Linearly Separable Case)</h4>
+                    <p class="mb-2"><strong>Problem:</strong> Find the hyperplane function $g(\vec{x}) = w_1 x_1 + w_2 x_2 + w_0 = 0$ for the given data points, assuming Class A = +1 and Class B = -1.</p>
+                    <table>
+                        <thead>
+                            <tr><th>X1 (Feature)</th><th>X2 (Feature)</th><th>Class</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>2</td><td>3</td><td>A</td></tr>
+                            <tr><td>1</td><td>1</td><td>B</td></tr>
+                            <tr><td>2</td><td>0</td><td>B</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="mb-2">Let's assume the support vectors are $(2,3)$ for Class A and $(1,1)$ and $(2,0)$ for Class B. And we assume the relation $w_2 = 2w_1$.</p>
+                    <p class="mt-4 mb-2"><strong>Solution:</strong></p>
+                    <p class="mb-2">This implies:</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>For Class A: $w_1(2) + w_2(3) + w_0 = +1$</li>
+                        <li>For Class B: $w_1(1) + w_2(1) + w_0 = -1$</li>
+                        <li>For Class B: $w_1(2) + w_2(0) + w_0 = -1$</li>
+                    </ul>
+                    <p class="mb-2">Substituting $w_2 = 2w_1$ into the equations for the support vectors:</p>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li>For point $(2,3)$ (Class A):
+                            <div class="math-formula">
+                                $$w_1(2) + (2w_1)(3) + w_0 = 1$$
+                                $$2w_1 + 6w_1 + w_0 = 1$$
+                                $$8w_1 + w_0 = 1 \quad (*)$$
+                            </div>
+                        </li>
+                        <li>For point $(1,1)$ (Class B):
+                            <div class="math-formula">
+                                $$w_1(1) + (2w_1)(1) + w_0 = -1$$
+                                $$w_1 + 2w_1 + w_0 = -1$$
+                                $$3w_1 + w_0 = -1 \quad (**)$$
+                            </div>
+                        </li>
+                    </ol>
+                    <p class="mb-2">Solve equations $(*)$ and $(**)$ simultaneously:</p>
+                    <p class="mb-2">Subtract $(**)$ from $(*)$:</p>
+                    <div class="math-formula">
+                        $$(8w_1 + w_0) - (3w_1 + w_0) = 1 - (-1)$$
+                        $$5w_1 = 2$$
+                        $$w_1 = \frac{2}{5}$$
+                    </div>
+                    <p class="mb-2">Substitute $w_1 = \frac{2}{5}$ back into equation $(**)$:</p>
+                    <div class="math-formula">
+                        $$3\left(\frac{2}{5}\right) + w_0 = -1$$
+                        $$\frac{6}{5} + w_0 = -1$$
+                        $$w_0 = -1 - \frac{6}{5} = -\frac{5}{5} - \frac{6}{5} = -\frac{11}{5}$$
+                    </div>
+                    <p class="mb-2">So, $w_1 = \frac{2}{5}$ and $w_2 = 2\left(\frac{2}{5}\right) = \frac{4}{5}$. The weight vector is $w = \left(\frac{2}{5}, \frac{4}{5}\right)$, and the bias is $w_0 = -\frac{11}{5}$.</p>
+                    <p class="mb-2">The Hyperplane Function is:</p>
+                    <div class="math-formula">
+                        $$g(\vec{x}) = \frac{2}{5}x_1 + \frac{4}{5}x_2 - \frac{11}{5} = 0$$
+                    </div>
+                    <p class="mb-2">Multiply by 5 to clear the denominators:</p>
+                    <div class="math-formula">
+                        $$2x_1 + 4x_2 - 11 = 0$$
+                    </div>
+                    <p class="mb-2"><strong>Margin Calculation:</strong></p>
+                    <div class="math-formula">
+                        $$m = \frac{2}{||w||}$$
+                        $$||w|| = \sqrt{w_1^2 + w_2^2} = \sqrt{\left(\frac{2}{5}\right)^2 + \left(\frac{4}{5}\right)^2} = \sqrt{\frac{4}{25} + \frac{16}{25}} = \sqrt{\frac{20}{25}} = \sqrt{\frac{4}{5}} = \frac{2}{\sqrt{5}}$$
+                        $$m = \frac{2}{2/\sqrt{5}} = \sqrt{5} \approx 2.236$$
+                    </div>
+
+                    <h4 class="sub-subsection-title">8.4 Non-Linearly Separable Case and the Kernel Trick</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Problem:</strong> Sometimes, data points cannot be separated by a straight line or hyperplane in their original feature space (e.g., concentric circles of data points). This is called <strong>non-linearly separable</strong> data.</li>
+                        <li class="key-concept"><strong>Solution: Mapping Function ($\Phi$) and Kernel Trick:</strong>
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>The idea is to transform the data from its original low-dimensional space into a new, higher-dimensional feature space using a <strong>non-linear mapping function</strong> $\Phi$.</li>
+                                <li>In this higher-dimensional space, the data might become linearly separable, allowing a hyperplane to be found.</li>
+                                <li>The "Kernel Trick" is a computational shortcut that allows SVMs to operate in this high-dimensional feature space without explicitly calculating the coordinates of the data points in that space. Instead, it calculates the dot product of the transformed features using a "kernel function."</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <p class="mb-2"><strong>Example: Non-Linear Separation with a Mapping Function</strong></p>
+                    <p class="mb-2"><strong>Problem:</strong> We have two classes (Blue and Red) of vectors in 2D.</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Blue Class:</strong> (1, 1), (-1, 1), (-1, -1), (1, -1)</li>
+                        <li><strong>Red Class:</strong> (2, 0), (0, 2), (-2, 0), (0, -2)</li>
+                    </ul>
+                    <p class="mb-2">These are not linearly separable. We need to find a non-linear mapping function $\Phi$ to transform them into a space where they *are* separable.</p>
+                    <p class="mb-2"><strong>Mapping Function:</strong></p>
+                    <div class="math-formula">
+                        $$\Phi(x_1, x_2) = \begin{cases} (x_1, x_2) & \text{if } x_1^2 + x_2^2 < 2 \\ \left(6\left(\frac{x_1}{x_1^2 + x_2^2}\right), 6\left(\frac{x_2}{x_1^2 + x_2^2}\right)\right) & \text{if } x_1^2 + x_2^2 \ge 2 \end{cases}$$
+                    </div>
+                    <p class="mb-2"><strong>Transformation:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Blue Class Vectors:</strong> For these vectors, $x_1^2 + x_2^2 = 1^2 + 1^2 = 2$. Assuming the intent is for points *within or on* the radius of $\sqrt{2}$ to remain unchanged, the blue points remain:
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>Blue: (1, 1), (-1, 1), (-1, -1), (1, -1)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Red Class Vectors:</strong> For all red vectors, $x_1^2 + x_2^2 = 4$. Since $4 \ge 2$, they will be transformed by the second rule:
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li>For (2, 0): $\Phi(2,0) = \left(6\left(\frac{2}{4}\right), 6\left(\frac{0}{4}\right)\right) = (3, 0)$</li>
+                                <li>For (0, 2): $\Phi(0,2) = \left(6\left(\frac{0}{4}\right), 6\left(\frac{2}{4}\right)\right) = (0, 3)$</li>
+                                <li>For (-2, 0): $\Phi(-2,0) = \left(6\left(\frac{-2}{4}\right), 6\left(\frac{0}{4}\right)\right) = (-3, 0)$</li>
+                                <li>For (0, -2): $\Phi(0,-2) = \left(6\left(\frac{0}{4}\right), 6\left(\frac{-2}{4}\right)\right) = (0, -3)$</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="mb-2"><strong>New Transformed Points:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>Blue (Class +1): (1, 1), (-1, 1), (-1, -1), (1, -1)</li>
+                        <li>Red (Class -1): (3, 0), (0, 3), (-3, 0), (0, -3)</li>
+                    </ul>
+                    <p class="mb-2">Now, we need to find a hyperplane that separates these transformed points. Assuming support vectors are (1,1) for Class +1 and (3,0) for Class -1, and given a simplified weight relation $w_1 = 7a$ and $w_2 = 9a$, the hyperplane equation in the transformed space is:</p>
+                    <div class="math-formula">
+                        $$7x_1' + 9x_2' - 81 = 0$$
+                    </div>
+                </div>
+                <div class="practical-section mt-8">
+                    <h3 class="subsection-title">Practical: Support Vector Classification with Scikit-learn (Linear and RBF Kernels)</h3>
+                    <p class="mb-4">We'll demonstrate Support Vector Classification (SVC) using Scikit-learn on synthetic datasets. These datasets are generated within the code, so no external download is needed. Copy and run this code in <a href="https://colab.research.google.com/" target="_blank" class="external-link">Google Colab</a>.</p>
+                    <div class="code-block-container">
+                        <div class="code-block-header">
+                            <span>Python Code: SVM Classification</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                        </div>
+                        <pre class="code-block">
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import svm
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.datasets import make_blobs # To create a synthetic dataset
+
+# 1. Generate a synthetic dataset for classification
+# make_blobs creates isotropic Gaussian blobs for clustering.
+# We'll use it here to create two distinct clusters (classes).
+X_svm, y_svm = make_blobs(n_samples=100, centers=2, random_state=42, cluster_std=1.5)
+print("Synthetic SVM Data (first 5 features and targets):")
+print("X_svm (features):\n", X_svm[:5])
+print("\ny_svm (targets):\n", y_svm[:5])
+print("\n---")
+
+# Visualize the synthetic data
+plt.figure(figsize=(8, 6))
+plt.scatter(X_svm[:, 0], X_svm[:, 1], c=y_svm, cmap='viridis', s=50, alpha=0.8)
+plt.title('Synthetic Data for SVM Classification')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.colorbar(label='Class')
+plt.grid(True)
+plt.show()
+print("Plot displayed: Synthetic data points for two classes.")
+print("\n---")
+
+# 2. Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_svm, y_svm, test_size=0.3, random_state=42)
+print(f"Training set size: {len(X_train)} samples")
+print(f"Testing set size: {len(X_test)} samples")
+print("\n---")
+
+# 3. Create an SVC model (Support Vector Classifier)
+# We'll use a linear kernel first for simplicity
+model_linear_svc = svm.SVC(kernel='linear', C=1.0, random_state=42) # C is regularization parameter
+
+# 4. Train the model
+print("Training the Linear SVC model...")
+model_linear_svc.fit(X_train, y_train)
+print("Model training complete.")
+print("\n---")
+
+# 5. Make predictions on the test set
+y_pred_linear = model_linear_svc.predict(X_test)
+print("First 10 actual classes from test set:")
+print(y_test[:10])
+print("First 10 predicted classes (Linear SVC):")
+print(y_pred_linear[:10])
+print("\n---")
+
+# 6. Evaluate the model's performance
+accuracy_linear = accuracy_score(y_test, y_pred_linear)
+class_report_linear = classification_report(y_test, y_pred_linear)
+print(f"Accuracy Score (Linear SVC): {accuracy_linear:.2f}")
+print("\nClassification Report (Linear SVC):")
+print(class_report_linear)
+print("\n---")
+
+# --- Now, let's try a non-linear kernel (RBF) for comparison ---
+
+# Generate some data that is NOT linearly separable
+X_svm_nl, y_svm_nl = make_blobs(n_samples=100, centers=2, random_state=0, cluster_std=1.0)
+X_svm_nl = np.append(X_svm_nl, X_svm_nl + np.random.normal(0, 1.5, X_svm_nl.shape), axis=0)
+y_svm_nl = np.append(y_svm_nl, 1 - y_svm_nl, axis=0) # Make it non-linearly separable
+# A more robust non-linear example: make_circles
+# X_svm_nl, y_svm_nl = make_circles(n_samples=100, factor=0.5, noise=0.05, random_state=42)
+
+
+# Split data for non-linear example
+X_train_nl, X_test_nl, y_train_nl, y_test_nl = train_test_split(
+    X_svm_nl, y_svm_nl, test_size=0.3, random_state=42
+)
+
+# Create an SVC model with RBF kernel
+model_rbf_svc = svm.SVC(kernel='rbf', C=1.0, gamma='scale', random_state=42) # gamma='scale' is default
+print("Training the RBF SVC model (for non-linear data)...")
+model_rbf_svc.fit(X_train_nl, y_train_nl)
+print("Model training complete.")
+print("\n---")
+
+y_pred_rbf = model_rbf_svc.predict(X_test_nl)
+accuracy_rbf = accuracy_score(y_test_nl, y_pred_rbf)
+print(f"Accuracy Score (RBF SVC for non-linear data): {accuracy_rbf:.2f}")
+
+# Function to plot decision boundary (for visualization)
+def plot_decision_boundary(X, y, model, title):
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.02),
+                         np.arange(y_min, y_max, 0.02))
+    Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    plt.contourf(xx, yy, Z, alpha=0.8, cmap=plt.cm.viridis)
+    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.viridis, edgecolors='k', s=50, alpha=0.8)
+    plt.title(title)
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 2')
+    plt.show()
+
+print("\nVisualizing decision boundaries (Linear vs. RBF):")
+plot_decision_boundary(X_svm, y_svm, model_linear_svc, 'SVC with Linear Kernel Decision Boundary')
+plot_decision_boundary(X_svm_nl, y_svm_nl, model_rbf_svc, 'SVC with RBF Kernel Decision Boundary (Non-linear Data)')
+print("Decision boundary plots displayed.")
+                        </pre>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600"><strong>Explanation:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                        <li><code>make_blobs():</code> Generates synthetic isotropic Gaussian blobs for clustering and is useful for demonstrating classification where data points naturally form clusters.</li>
+                        <li><code>svm.SVC(kernel='linear', C=1.0, random_state=42):</code> Initializes the Support Vector Classifier.
+                            <ul class="list-circle list-inside ml-4">
+                                <li><code>kernel='linear':</code> Specifies a linear kernel, meaning the decision boundary will be a straight line.</li>
+                                <li><code>C:</code> A regularization parameter. A smaller <code>C</code> allows for more misclassifications (larger margin, simpler model), while a larger <code>C</code> tries to perfectly classify all training points (smaller margin, more complex model).</li>
+                            </ul>
+                        </li>
+                        <li><code>svm.SVC(kernel='rbf', C=1.0, gamma='scale', random_state=42):</code>
+                            <ul class="list-circle list-inside ml-4">
+                                <li><code>kernel='rbf':</code> Uses the Radial Basis Function kernel, which allows for non-linear decision boundaries.</li>
+                                <li><code>gamma:</code> A parameter for non-linear kernels. It defines how much influence a single training example has. Small <code>gamma</code> means a large influence, and vice versa. <code>gamma='scale'</code> is a default that scales it by features.</li>
+                            </ul>
+                        </li>
+                        <li><code>model.fit()</code> and <code>model.predict():</code> Same as in other Scikit-learn models for training and prediction.</li>
+                        <li><code>accuracy_score()</code> and <code>classification_report():</code> Used for evaluating the classifier's performance.</li>
+                        <li><strong>Decision Boundary Plotting Function:</strong> The <code>plot_decision_boundary</code> function helps visualize how the SVM separates the classes. For a linear kernel, you'll see a straight line. For RBF, you'll see a curved or irregular boundary, indicating its ability to handle non-linear data.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 09. Artificial Neural Networks (ANN) -->
+            <div id="ann" class="section hidden">
+                <h2 class="section-title">09. Artificial Neural Networks (ANN)</h2>
+                <div class="theory-section">
+                    <h3 class="subsection-title">Theory</h3>
+                    <p class="mb-4">Artificial Neural Networks (ANNs) are computational models inspired by the structure and function of the human brain. They are used for a wide range of tasks, including classification, regression, pattern recognition, and more.</p>
+
+                    <h4 class="sub-subsection-title">9.1 Neuron Model (Perceptron)</h4>
+                    <p class="mb-2">The basic building block of an ANN is an artificial neuron (also called a perceptron). It's a simple processing unit that mimics a biological neuron.</p>
+                    <p class="mb-4"><strong>Key Elements:</strong></p>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li class="key-concept"><strong>Inputs ($x_i$):</strong> Signals received from other neurons or external data.</li>
+                        <li class="key-concept"><strong>Weights ($w_i$):</strong> Each input has an associated weight that modifies the strength of the input signal. A higher weight means that input is more important.</li>
+                        <li class="key-concept"><strong>Weighted Sum (Net Input, $n$):</strong> The neuron calculates a weighted sum of its inputs.
+                            <div class="math-formula">
+                                $$n = x_1w_1 + x_2w_2 + \dots + x_nw_n$$
+                            </div>
+                            In vector notation, this is $n = w^T x$.
+                        </li>
+                        <li class="key-concept"><strong>Bias ($b$):</strong> An additional input that is constant (usually 1) and has its own weight. It allows the activation function to be shifted.
+                            <div class="math-formula">
+                                $$n = w_1x_1 + w_2x_2 + \dots + w_nx_n + b$$
+                            </div>
+                        </li>
+                        <li class="key-concept"><strong>Activation Function ($f$):</strong> The weighted sum and bias are passed through an activation function. This function introduces non-linearity into the network, allowing it to learn complex patterns.
+                            <div class="math-formula">
+                                $$a = f(n) = f(w^T x + b)$$
+                            </div>
+                        </li>
+                        <li class="key-concept"><strong>Output ($a$):</strong> The result produced by the activation function, which is then passed on to other neurons in the network.</li>
+                    </ol>
+
+                    <h4 class="sub-subsection-title">9.2 Common Activation Functions</h4>
+                    <p class="mb-2">The <strong>Log-Sigmoid transfer function</strong> is commonly used:</p>
+                    <div class="math-formula">
+                        $$a = \delta(n) = \frac{1}{1 + e^{-n}}$$
+                    </div>
+                    <p class="mb-4">This function "squashes" any input $n$ (from $-\infty$ to $+\infty$) into an output $a$ between 0 and 1.</p>
+
+                    <h4 class="sub-subsection-title">9.3 Examples of Neuron Output Calculation</h4>
+                    <p class="mb-2"><strong>Example 1: Single-Input Neuron</strong></p>
+                    <p class="mb-2"><strong>Parameters:</strong> $w = 3$, $p = 2$ (input), $b = -1.5$</p>
+                    <p class="mt-4 mb-2"><strong>Solution:</strong></p>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li><strong>Calculate Net Input ($n$):</strong>
+                            <div class="math-formula">
+                                $$n = wp + b = (3)(2) + (-1.5) = 6 - 1.5 = 4.5$$
+                            </div>
+                        </li>
+                        <li><strong>Calculate Neuron Output ($a$) using Log-Sigmoid:</strong>
+                            <div class="math-formula">
+                                $$a = \delta(n) = \frac{1}{1 + e^{-n}} = \frac{1}{1 + e^{-4.5}} \approx 0.9890$$
+                            </div>
+                        </li>
+                    </ol>
+
+                    <p class="mb-2"><strong>Example 2: Multi-Input Neuron</strong></p>
+                    <p class="mb-2"><strong>Parameters:</strong> $w = \begin{pmatrix} 3 \\ 2 \end{pmatrix}$, $p = \begin{pmatrix} -5 \\ 6 \end{pmatrix}$ (input vector), $b = 1.2$</p>
+                    <p class="mt-4 mb-2"><strong>Solution:</strong></p>
+                    <ol class="list-decimal list-inside ml-4">
+                        <li><strong>Calculate Net Input ($n$):</strong>
+                            <div class="math-formula">
+                                $$n = w^T p + b = \begin{pmatrix} 3 & 2 \end{pmatrix} \begin{pmatrix} -5 \\ 6 \end{pmatrix} + 1.2$$
+                                $$n = (3 \times -5) + (2 \times 6) + 1.2 = -15 + 12 + 1.2 = -1.8$$
+                            </div>
+                        </li>
+                        <li><strong>Calculate Neuron Output ($a$) using Log-Sigmoid:</strong>
+                            <div class="math-formula">
+                                $$a = \delta(n) = \frac{1}{1 + e^{-n}} = \frac{1}{1 + e^{-(-1.8)}} = \frac{1}{1 + e^{1.8}} \approx 0.14185$$
+                            </div>
+                        </li>
+                    </ol>
+
+                    <h4 class="sub-subsection-title">9.4 Simplified Two-Layer and Three-Layer ANNs</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Layers:</strong> Neurons in an ANN are organized into layers:
+                            <ul class="list-circle list-inside ml-4 mt-1">
+                                <li><strong>Input Layer:</strong> Receives the raw data.</li>
+                                <li><strong>Hidden Layer(s):</strong> Intermediate layers where computations are performed. There can be one or more hidden layers.</li>
+                                <li><strong>Output Layer:</strong> Produces the final result of the network.</li>
+                            </ul>
+                        </li>
+                        <li class="key-concept"><strong>Two-Layer ANN (Input + Hidden + Output):</strong> The slides show a setup where inputs $x_i$ connect to hidden neurons (producing $y_i$), and these $y_i$ then connect to output neurons (producing $z_i$).</li>
+                        <li class="key-concept"><strong>Three-Layer ANN:</strong> This implies an input layer, two hidden layers, and an output layer. The outputs of the first hidden layer ($y_i$) become the inputs to the second hidden layer (which then produces $z_i$), and so on.</li>
+                    </ul>
+
+                    <h4 class="sub-subsection-title">9.5 Exercise: Calculating Outputs in a Multi-Layer ANN</h4>
+                    <p class="mb-2"><strong>Problem:</strong> A training pattern with input vector $Q = [Q_1; Q_2; Q_3]^T$ and desired outputs $Z = [Z_1; Z_2]^T$ is presented to a neural network.
+                    <strong>Input Vector $Q = [2; 4; 3]^T$.</strong></p>
+                    <p class="mb-2"><strong>Weights after training:</strong></p>
+                    <h5 class="font-semibold text-gray-700 mt-2 mb-1">Input to Hidden Layer (X weights):</h5>
+                    <table>
+                        <thead>
+                            <tr><th>Weight</th><th>Value</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>$X_{11}$</td><td>2.2</td></tr>
+                            <tr><td>$X_{12}$</td><td>-1.2</td></tr>
+                            <tr><td>$X_{13}$</td><td>0.5</td></tr>
+                            <tr><td>$X_{21}$</td><td>-3.2</td></tr>
+                            <tr><td>$X_{22}$</td><td>4</td></tr>
+                            <tr><td>$X_{23}$</td><td>-2</td></tr>
+                            <tr><td>$X_{31}$</td><td>2.25</td></tr>
+                            <tr><td>$X_{32}$</td><td>-2.2</td></tr>
+                            <tr><td>$X_{33}$</td><td>1.5</td></tr>
+                        </tbody>
+                    </table>
+                    <h5 class="font-semibold text-gray-700 mt-4 mb-1">Hidden to Output Layer (Y weights):</h5>
+                    <table>
+                        <thead>
+                            <tr><th>Weight</th><th>Value</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>$Y_{11}$</td><td>3</td></tr>
+                            <tr><td>$Y_{21}$</td><td>-2.5</td></tr>
+                            <tr><td>$Y_{31}$</td><td>-2</td></tr>
+                            <tr><td>$Y_{12}$</td><td>-0.5</td></tr>
+                            <tr><td>$Y_{22}$</td><td>1.9</td></tr>
+                            <tr><td>$Y_{32}$</td><td>1.5</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="mb-2"><strong>Assumption:</strong> All units have sigmoid activation functions, and each unit has a bias $\beta = 0$.</p>
+
+                    <h5 class="font-semibold text-gray-700 mt-4 mb-2">a. Output of the first hidden neurons $v_1, v_2, v_3$:</h5>
+                    <p class="mb-2">For a neuron $j$, the net input $n_j = \sum_i (X_{ji} \times Q_i) + \beta_j$. Since $\beta_j = 0$, $n_j = \sum_i (X_{ji} \times Q_i)$.<br>The output $v_j = \delta(n_j) = \frac{1}{1+e^{-n_j}}$.</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>For $v_1$:</strong>
+                            <div class="math-formula">
+                                $$n_1 = (2.2 \times 2) + (-1.2 \times 4) + (0.5 \times 3) = 4.4 - 4.8 + 1.5 = 1.1$$
+                                $$v_1 = \frac{1}{1 + e^{-1.1}} = \frac{1}{1 + 0.3328} = \frac{1}{1.3328} \approx 0.7503$$
+                            </div>
+                        </li>
+                        <li><strong>For $v_2$:</strong>
+                            <div class="math-formula">
+                                $$n_2 = (-3.2 \times 2) + (4 \times 4) + (-2 \times 3) = -6.4 + 16 - 6 = 3.6$$
+                                $$v_2 = \frac{1}{1 + e^{-3.6}} = \frac{1}{1 + 0.0273} = \frac{1}{1.0273} \approx 0.9734$$
+                            </div>
+                        </li>
+                        <li><strong>For $v_3$:</strong>
+                            <div class="math-formula">
+                                $$n_3 = (2.25 \times 2) + (-2.2 \times 4) + (1.5 \times 3) = 4.5 - 8.8 + 4.5 = 0.2$$
+                                $$v_3 = \frac{1}{1 + e^{-0.2}} = \frac{1}{1 + 0.8187} = \frac{1}{1.8187} \approx 0.5499$$
+                            </div>
+                        </li>
+                    </ul>
+                    <p class="mb-2"><strong>Outputs of the first hidden neurons:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>$v_1 \approx 0.7503$</li>
+                        <li>$v_2 \approx 0.9734$</li>
+                        <li>$v_3 \approx 0.5499$</li>
+                    </ul>
+
+                    <h5 class="font-semibold text-gray-700 mt-4 mb-2">b. Outputs of the second (output) neurons $z_1$ and $z_2$:</h5>
+                    <p class="mb-2">Now, the outputs $v_1, v_2, v_3$ become the inputs to the output layer.<br>For an output neuron $k$, the net input $n_k = \sum_j (Y_{jk} \times v_j) + \beta_k$. Since $\beta_k = 0$, $n_k = \sum_j (Y_{jk} \times v_j)$.<br>The output $z_k = \delta(n_k) = \frac{1}{1+e^{-n_k}}$.</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>For $z_1$:</strong>
+                            <div class="math-formula">
+                                $$n_{z1} = (3 \times 0.7503) + (-2.5 \times 0.9734) + (-2 \times 0.5499)$$
+                                $$n_{z1} = 2.2509 - 2.4335 - 1.0998 = -1.2824$$
+                                $$z_1 = \frac{1}{1 + e^{-(-1.2824)}} = \frac{1}{1 + e^{1.2824}} = \frac{1}{1 + 3.6045} = \frac{1}{4.6045} \approx 0.2172$$
+                            </div>
+                        </li>
+                        <li><strong>For $z_2$:</strong>
+                            <div class="math-formula">
+                                $$n_{z2} = (-0.5 \times 0.7503) + (1.9 \times 0.9734) + (1.5 \times 0.5499)$$
+                                $$n_{z2} = -0.37515 + 1.84946 + 0.82485 = 2.29916$$
+                                $$z_2 = \frac{1}{1 + e^{-2.29916}} = \frac{1}{1 + 0.1005} = \frac{1}{1.1005} \approx 0.9087$$
+                            </div>
+                        </li>
+                    </ul>
+                    <p class="mb-2"><strong>Outputs of the second (output) neurons:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>$z_1 \approx 0.2172$</li>
+                        <li>$z_2 \approx 0.9087$</li>
+                    </ul>
+                </div>
+                <div class="practical-section mt-8">
+                    <h3 class="subsection-title">Practical: Building a Simple Neural Network with Keras/TensorFlow</h3>
+                    <p class="mb-4">Building and training a neural network typically involves libraries like TensorFlow or Keras (which is a high-level API for TensorFlow). This example uses a synthetic dataset. Copy and run this code in <a href="https://colab.research.google.com/" target="_blank" class="external-link">Google Colab</a>.</p>
+                    <div class="code-block-container">
+                        <div class="code-block-header">
+                            <span>Python Code: Neural Network</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                        </div>
+                        <pre class="code-block">
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import make_moons # A dataset for demonstrating non-linear separation
+
+# 1. Generate a synthetic dataset for classification (non-linearly separable)
+X_nn, y_nn = make_moons(n_samples=1000, noise=0.2, random_state=42)
+print("Synthetic Neural Network Data (first 5 features and targets):")
+print("X_nn (features):\n", X_nn[:5])
+print("\ny_nn (targets):\n", y_nn[:5])
+print("\n---")
+
+# 2. Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_nn, y_nn, test_size=0.3, random_state=42)
+
+# 3. Scale the features (important for neural networks)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+print(f"Training set size: {len(X_train_scaled)} samples")
+print(f"Testing set size: {len(X_test_scaled)} samples")
+print("\n---")
+
+# 4. Build the Neural Network Model using Keras Sequential API
+# A simple feed-forward neural network with one hidden layer
+model = keras.Sequential([
+    # Input Layer (implicitly defined by the first Dense layer's input_shape)
+    # Dense layer: each neuron is connected to every neuron in the previous layer
+    keras.layers.Dense(64, activation='relu', input_shape=(X_train_scaled.shape[1],)),
+    # Hidden Layer 1: 64 neurons, ReLU (Rectified Linear Unit) activation
+    # ReLU is a common choice for hidden layers: f(x) = max(0, x)
+    # Output Layer: 1 neuron (for binary classification), Sigmoid activation
+    # Sigmoid outputs a probability between 0 and 1, suitable for binary classification
+    keras.layers.Dense(1, activation='sigmoid')
+])
+print("Neural Network Model Summary:")
+model.summary() # Prints a summary of the model's layers and parameters
+print("\n---")
+
+# 5. Compile the model
+# Compile configures the model for training
+model.compile(optimizer='adam', # Adam is a popular optimization algorithm
+              loss='binary_crossentropy', # Appropriate loss for binary classification
+              metrics=['accuracy']) # Metric to monitor during training
+print("Model compiled.")
+print("\n---")
+
+# 6. Train the model
+# model.fit() trains the model
+print("Training the Neural Network...")
+history = model.fit(
+    X_train_scaled, y_train,
+    epochs=50, # Number of times to iterate over the entire training dataset
+    batch_size=32, # Number of samples per gradient update
+    validation_split=0.2, # Fraction of training data to be used as validation data
+    verbose=0 # Suppress output during training, set to 1 or 2 for progress updates
+)
+print("Neural Network training complete.")
+print(f"Final Training Accuracy: {history.history['accuracy'][-1]:.2f}")
+print(f"Final Validation Accuracy: {history.history['val_accuracy'][-1]:.2f}")
+print("\n---")
+
+# 7. Evaluate the model on the test set
+loss, accuracy = model.evaluate(X_test_scaled, y_test, verbose=0)
+print(f"Test Loss: {loss:.2f}")
+print(f"Test Accuracy: {accuracy:.2f}")
+print("\n---")
+
+# 8. Make predictions
+# predict_proba returns probabilities, predict returns class labels
+probabilities = model.predict(X_test_scaled)
+predictions = (probabilities > 0.5).astype(int).flatten() # Convert probabilities to binary labels
+print("First 10 actual classes from test set:")
+print(y_test[:10])
+print("First 10 predicted classes (Neural Network):")
+print(predictions[:10])
+print("\n---")
+
+# Optional: Plotting training history (uncomment to see plots)
+# import matplotlib.pyplot as plt
+# plt.figure(figsize=(10, 5))
+# plt.plot(history.history['accuracy'], label='Training Accuracy')
+# plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+# plt.title('Model Accuracy over Epochs')
+# plt.xlabel('Epoch')
+# plt.ylabel('Accuracy')
+# plt.legend()
+# plt.grid(True)
+# plt.show()
+                        </pre>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600"><strong>Explanation:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                        <li><code>make_moons():</code> Generates a 2D dataset that is not linearly separable, making it a good candidate to demonstrate the power of non-linear models like neural networks.</li>
+                        <li><code>StandardScaler():</code> Essential for neural networks, as they are sensitive to the scale of input features.</li>
+                        <li><code>keras.Sequential([...]):</code> Defines a linear stack of layers for the neural network.</li>
+                        <li><code>keras.layers.Dense():</code> Represents a fully connected (dense) layer.
+                            <ul class="list-circle list-inside ml-4">
+                                <li><code>64:</code> Number of neurons in the hidden layer.</li>
+                                <li><code>activation='relu':</code> Applies the ReLU activation function.</li>
+                                <li><code>input_shape:</code> Specifies the shape of the input data for the first layer (required only for the first layer). <code>X_train_scaled.shape[1]</code> gets the number of features.</li>
+                                <li><code>1:</code> Number of neurons in the output layer (1 for binary classification).</li>
+                                <li><code>activation='sigmoid':</code> Applies the Sigmoid activation function, which squashes the output to a range between 0 and 1, interpretable as a probability.</li>
+                            </ul>
+                        </li>
+                        <li><code>model.compile():</code> Configures the model for training.
+                            <ul class="list-circle list-inside ml-4">
+                                <li><code>optimizer='adam':</code> The Adam optimizer is an efficient stochastic gradient descent algorithm.</li>
+                                <li><code>loss='binary_crossentropy':</code> The appropriate loss function for binary classification problems.</li>
+                                <li><code>metrics=['accuracy']:</code> What to report during training.</li>
+                            </ul>
+                        </li>
+                        <li><code>model.fit():</code> Trains the neural network.
+                            <ul class="list-circle list-inside ml-4">
+                                <li><code>epochs:</code> The number of times the training algorithm will iterate over the entire training dataset.</li>
+                                <li><code>batch_size:</code> The number of samples processed before the model's weights are updated.</li>
+                                <li><code>validation_split:</code> Reserves a portion of the training data for validation, allowing you to monitor the model's performance on unseen data during training.</li>
+                            </ul>
+                        </li>
+                        <li><code>model.evaluate():</code> Assesses the model's performance on the test set.</li>
+                        <li><code>model.predict():</code> Generates probability predictions for the input data.</li>
+                        <li><code>(probabilities > 0.5).astype(int).flatten():</code> Converts the predicted probabilities into binary class labels (0 or 1).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 10. Time Series - Stock Price Prediction -->
+            <div id="time-series" class="section hidden">
+                <h2 class="section-title">10. Time Series - Stock Price Prediction</h2>
+                <div class="theory-section">
+                    <h3 class="subsection-title">Theory</h3>
+                    <p class="mb-4">Time series data is a sequence of data points indexed in time order. Time series analysis focuses on understanding the underlying causes of trends and cycles over time.</p>
+                    <h4 class="sub-subsection-title">Key Concepts & Definitions:</h4>
+                    <ul class="list-disc list-inside ml-4">
+                        <li class="key-concept"><strong>Time Series Data:</strong> Data collected or recorded at successive, equally spaced points in time (e.g., daily stock prices, hourly temperature readings, monthly sales).</li>
+                        <li class="key-concept"><strong>Seasonality:</strong> Refers to regular, predictable patterns that recur over a specific period (e.g., daily, weekly, monthly, yearly). For example, retail sales often spike during holiday seasons.</li>
+                        <li class="key-concept"><strong>Trend:</strong> A long-term increase or decrease in the data.</li>
+                        <li class="key-concept"><strong>Cyclical Component:</strong> Fluctuations that are not fixed in period, typically associated with business cycles.</li>
+                        <li class="key-concept"><strong>Irregular (Residual) Component:</strong> Random, unpredictable variations in the data.</li>
+                        <li class="key-concept"><strong>Decomposition:</strong> Breaking down a time series into its underlying components (trend, seasonality, residual).</li>
+                        <li class="key-concept"><strong>Forecasting:</strong> Using historical time series data to make informed predictions about future values.</li>
+                        <li class="key-concept"><strong>Use-Case: Air Passengers Dataset:</strong> The Air Passengers dataset is a classic time series dataset showing the monthly total number of airline passengers from 1949 to 1960. It's often used to demonstrate time series concepts like seasonality and trend.</li>
+                    </ul>
+                </div>
+                <div class="practical-section mt-8">
+                    <h3 class="subsection-title">Practical: Time Series Decomposition and Naive Forecasting</h3>
+                    <p class="mb-4">We'll use a synthetic dataset mimicking the Air Passengers data to demonstrate time series concepts. For real-world time series data, you can download datasets like <a href="https://www.kaggle.com/datasets/rakannimer/air-passengers" target="_blank" class="external-link">Air Passengers</a> or <a href="https://www.kaggle.com/datasets/sumanthratna/daily-climate-time-series-data" target="_blank" class="external-link">Daily Climate Data</a> from Kaggle. Copy and run this code in <a href="https://colab.research.google.com/" target="_blank" class="external-link">Google Colab</a>.</p>
+                    <div class="code-block-container">
+                        <div class="code-block-header">
+                            <span>Python Code: Time Series Analysis</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
+                        </div>
+                        <pre class="code-block">
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+# 1. Load the Air Passengers Dataset (or create a dummy similar structure)
+# In a real scenario, you'd load from a CSV or similar.
+# For demonstration, let's create a synthetic dataset that mimics the Air Passengers pattern.
+date_range = pd.date_range(start='1949-01-01', periods=144, freq='MS') # 12 years * 12 months = 144 months
+
+# Create a synthetic passenger count with trend and seasonality
+passengers = (np.linspace(100, 600, 144) + # Trend
+              80 * np.sin(np.linspace(0, 3 * np.pi, 144) * 4) + # Seasonality (yearly pattern)
+              np.random.normal(0, 10, 144)) # Noise
+
+# Ensure passengers are positive
+passengers[passengers < 0] = 0
+df_air = pd.DataFrame({'Passengers': passengers}, index=date_range)
+df_air.index.name = 'Month' # Name the index for clarity
+
+print("Synthetic Air Passengers Data (first 5 rows):")
+print(df_air.head())
+print("\n---")
+
+# 2. Plot and investigate graphs and data
+plt.figure(figsize=(12, 6))
+plt.plot(df_air.index, df_air['Passengers'], label='Monthly Passengers')
+plt.title('Monthly Air Passengers (Synthetic Data)')
+plt.xlabel('Date')
+plt.ylabel('Number of Passengers')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+print("Plot displayed: Monthly Air Passengers Trend and Seasonality.")
+print("\n---")
+
+# 3. Understand Seasonality and Decompose data
+# Additive model: Time Series = Trend + Seasonal + Residual
+# Multiplicative model: Time Series = Trend * Seasonal * Residual (often better for increasing amplitude)
+# For data with increasing variance like air passengers, multiplicative is often preferred.
+decomposition = seasonal_decompose(df_air['Passengers'], model='multiplicative', period=12) # period=12 for monthly data
+
+plt.figure(figsize=(10, 8))
+# Trend component
+plt.subplot(411)
+plt.plot(decomposition.trend)
+plt.title('Trend Component')
+plt.ylabel('Passengers')
+plt.grid(True)
+
+# Seasonal component
+plt.subplot(412)
+plt.plot(decomposition.seasonal)
+plt.title('Seasonal Component')
+plt.ylabel('Factor') # For multiplicative, it's a factor
+plt.grid(True)
+
+# Residual component
+plt.subplot(413)
+plt.plot(decomposition.resid)
+plt.title('Residual Component')
+plt.ylabel('Error')
+plt.grid(True)
+
+# Original series
+plt.subplot(414)
+plt.plot(df_air['Passengers'])
+plt.title('Original Series')
+plt.ylabel('Passengers')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+print("Decomposition plot displayed: Trend, Seasonal, and Residual components.")
+print("\n---")
+
+# 4. Forecasting (Conceptual with example of a simple shift)
+# Real forecasting uses models like ARIMA, Prophet, or LSTMs.
+# This is a very basic example to illustrate the idea of predicting future values.
+# Let's forecast the next 12 months using a simple naive method (last observed value for seasonality)
+# This is highly simplified and not a robust forecasting method.
+# For demonstration, we'll just predict the next value as the last value.
+last_passenger_value = df_air['Passengers'].iloc[-1]
+last_date = df_air.index[-1]
+print(f"Last recorded passenger value: {last_passenger_value:.2f} on {last_date.strftime('%Y-%m')}")
+
+# Create future dates
+future_dates = pd.date_range(start=last_date + pd.DateOffset(months=1), periods=12, freq='MS')
+# A very naive forecast: simply repeat the last known value
+forecast_values = [last_passenger_value] * len(future_dates)
+forecast_series = pd.Series(forecast_values, index=future_dates)
+print("\nNaive Forecast for next 12 months (first 5 values):")
+print(forecast_series.head())
+
+# Plotting original data with forecast
+plt.figure(figsize=(12, 6))
+plt.plot(df_air.index, df_air['Passengers'], label='Historical Passengers')
+plt.plot(forecast_series.index, forecast_series, label='Naive Forecast', linestyle='--')
+plt.title('Monthly Air Passengers with Naive Forecast')
+plt.xlabel('Date')
+plt.ylabel('Number of Passengers')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+print("Plot displayed: Historical data with naive forecast.")
+print("\nNote: Real forecasting requires more sophisticated models like ARIMA, Prophet, or neural networks.")
+                        </pre>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600"><strong>Explanation:</strong></p>
+                    <ul class="list-disc list-inside ml-4 text-sm text-gray-600">
+                        <li><code>pandas.date_range():</code> Creates a time series index.</li>
+                        <li><code>matplotlib.pyplot.plot():</code> Used to visualize the time series data.</li>
+                        <li><code>seasonal_decompose()</code> from <code>statsmodels.tsa.seasonal:</code> This function performs time series decomposition.</li>
+                        <li><code>model='multiplicative':</code> Assumes the components multiply to form the observed series (suitable when seasonal fluctuations increase with the level of the series).</li>
+                        <li><code>period=12:</code> Specifies that the seasonality repeats every 12 data points (e.g., 12 months for monthly data).</li>
+                        <li><strong>Forecasting:</strong> The provided example uses a very basic "naive" forecasting method (just repeats the last known value). In real-world scenarios, you would use advanced models like:
+                            <ul class="list-circle list-inside ml-4 mt-2">
+                                <li><strong>ARIMA (AutoRegressive Integrated Moving Average):</strong> A classical statistical model for time series forecasting.</li>
+                                <li><strong>Prophet:</strong> A forecasting procedure developed by Facebook, designed for business forecasts with strong seasonal effects.</li>
+                                <li><strong>LSTM (Long Short-Term Memory) Networks:</strong> A type of recurrent neural network particularly well-suited for sequence prediction problems.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+
+            // Function to show a specific section and hide others
+            const showSection = (id) => {
+                sections.forEach(section => {
+                    section.classList.add('hidden');
+                });
+                document.getElementById(id).classList.remove('hidden');
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.querySelector(`.nav-link[data-section="${id}"]`).classList.add('active');
+
+                // Scroll to top of content area on section change
+                const contentArea = document.getElementById('content-area');
+                if (contentArea) {
+                    contentArea.scrollTop = 0;
+                }
+                // Re-typeset MathJax for the newly visible section
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById(id)]);
+            };
+
+            // Event listener for navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.target.dataset.section;
+                    showSection(targetId);
+
+                    // Hide sidebar on mobile after clicking a link
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.add('hidden-mobile');
+                    }
+                });
+            });
+
+            // Initial display: show the first section
+            showSection('intro-ml');
+
+            // Mobile sidebar toggle
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('hidden-mobile');
+                });
+            }
+
+            // Function to copy code to clipboard
+            window.copyCode = (button) => {
+                const codeBlock = button.closest('.code-block-container').querySelector('.code-block');
+                const textToCopy = codeBlock.innerText;
+
+                // Use a temporary textarea to copy text
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = textToCopy;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy Code';
+                }, 2000);
+            };
+        });
+
+        // Ensure sidebar is hidden on small screens initially
+        window.addEventListener('resize', () => {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('hidden-mobile');
+            } else {
+                // Only hide if it's not already hidden or explicitly shown by user
+                if (!sidebar.classList.contains('hidden-mobile') && !sidebar.dataset.manualShow) {
+                    sidebar.classList.add('hidden-mobile');
+                }
+            }
+        });
+
+        // Initial check on load for mobile view
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('hidden-mobile');
+            }
+        });
+    </script>
+</body>
+</html>
